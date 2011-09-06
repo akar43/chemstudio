@@ -8,7 +8,7 @@ namespace Chemistry_Studio
     class Program
     {
         static Char[] delims = {' ',',',':','?','.','-'};
-
+        static int akcheck;
         private static bool remNullStr(String s)
         {
             if (s.Length==0)
