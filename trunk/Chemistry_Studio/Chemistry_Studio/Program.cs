@@ -7,6 +7,7 @@ namespace Chemistry_Studio
 {
     class Program
     {
+        static int check;
         static Char[] delims = {' ',',',':','?','.','-'};
         static int akcheck;
         private static bool remNullStr(String s)
