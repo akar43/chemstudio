@@ -68,6 +68,13 @@ namespace Chemistry_Studio
             return predicates;
         }
 
+        public static void typeSafe(List<string> tokens, Node parseTree)
+        {
+            foreach (string tok in tokens)
+            {
+
+            }
+        }
 
         public static void Main(string[] args)
         {
