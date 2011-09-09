@@ -7,6 +7,7 @@ namespace Chemistry_Studio
 {
     class Program
     {
+        static List<Node> completeTrees;
         static Char[] delims = {' ',',',':','?','.','-'};
         private static bool remNullStr(String s)
         {
@@ -68,11 +69,26 @@ namespace Chemistry_Studio
             return predicates;
         }
 
-        public static void typeSafe(List<string> tokens, Node parseTree)
+        public static bool ifSatisfy(string tok, Node currNode, Node hole)
         {
+            return true;
+        }
+
+        public static Node updateTree(string tok, Node parseTree)
+        {
+        }
+
+        public static void typeSafe(List<string> tokens, Node parseTree, List<Node> holeList)
+        {
+            if (tokens.Count() == 0) { completeTrees.Add(parseTree); return;
             foreach (string tok in tokens)
             {
-
+                if ifSatisfy(tok, parseTree, holeList[0])
+                {
+                    Node newTree = updateTree(tok, parseTree);
+                    List<string> newTokens = tokens.Select(i => (string)i.Clone()).ToList();
+                    typeSafe(newTokens, newTree, newHoleList);
+                }
             }
         }
 
