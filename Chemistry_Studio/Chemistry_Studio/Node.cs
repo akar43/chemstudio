@@ -5,11 +5,12 @@ using System.Text;
 
 namespace Chemistry_Studio
 {
-    public class Node
+    public class Node : ICloneable
     {
         string outputType;
         string data;
         List<Node> children;
+        Node parent;
 
         public Node()
         {
@@ -20,6 +21,12 @@ namespace Chemistry_Studio
         {
             data = label;
             children = new List<Node>();
+        }
+
+        public Node Clone()
+        {
+            Node newNode = (Node)this.MemberwiseClone();
+            return newNode;
         }
     }
 }
