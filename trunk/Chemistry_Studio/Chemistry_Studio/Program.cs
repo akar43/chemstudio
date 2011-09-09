@@ -69,24 +69,27 @@ namespace Chemistry_Studio
             return predicates;
         }
 
-        public static bool ifSatisfy(string tok, Node currNode, Node hole)
+        public static bool ifSatisfy(string tok, Node hole)
         {
-            return true;
+            if (hole.data == 
         }
 
-        public static Node updateTree(string tok, Node parseTree)
+        public static Node updateTree(string tok, Node parseTree, List<Node> newHoleList)
         {
+
         }
 
         public static void typeSafe(List<string> tokens, Node parseTree, List<Node> holeList)
         {
-            if (tokens.Count() == 0) { completeTrees.Add(parseTree); return;
+            if (tokens.Count() == 0) { completeTrees.Add(parseTree); return; }
             foreach (string tok in tokens)
             {
-                if ifSatisfy(tok, parseTree, holeList[0])
+                if ifSatisfy(tok, holeList[0])
                 {
-                    Node newTree = updateTree(tok, parseTree);
                     List<string> newTokens = tokens.Select(i => (string)i.Clone()).ToList();
+                    Node newTree = (Node)parseTree.Clone();
+
+                    Node newTree = updateTree(tok, parseTree, newHolelist);
                     typeSafe(newTokens, newTree, newHoleList);
                 }
             }
