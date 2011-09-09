@@ -7,25 +7,29 @@ namespace Chemistry_Studio
 {
     public class Node : ICloneable
     {
-        string outputType;
-        string data;
-        List<Node> children;
-        Node parent;
+        public string outputType;
+        public string data;
+        public List<Node> children;
+        public Node parent;
 
-        public Node()
+        public Node(Node parent)
         {
+            this.parent = parent;
             children = new List<Node>();
         }
 
-        public Node(string label)
+        public Node(string label, Node parent)
         {
+            this.parent = parent;
             data = label;
             children = new List<Node>();
         }
 
-        public Node Clone()
+        public Object Clone()
         {
-            Node newNode = (Node)this.MemberwiseClone();
+            Node newNode = new Node(this.data, this.parent);
+            newNode.outputType = this.outputType;
+            newNode.children = this.children.Select(i => (Node)i.Clone()).ToList();
             return newNode;
         }
     }
