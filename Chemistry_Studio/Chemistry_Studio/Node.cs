@@ -51,19 +51,25 @@ namespace Chemistry_Studio
         public Node()
         {
             this.isHole = true;
+            this.outputType = "null";
+
         }
 
         public void holeFill(string label)
         {
             this.isHole = false;
-            data = label;
-            children = new List<Node>();
+            this.data = label;
+            this.children = new List<Node>();
+            Console.WriteLine(label);
             List<string> param = Tokens.inputTypePredicates[label];
-            foreach (string x in param)
+            if (param[0] != "null")
             {
-                Node tempNode = new Node();     //check that it appends to end of list
-                this.children.Add(tempNode);
-                tempNode.outputType = (string)x.Clone();
+                foreach (string x in param)
+                {
+                    Node tempNode = new Node();     //check that it appends to end of list
+                    this.children.Add(tempNode);
+                    tempNode.outputType = (string)x.Clone();
+                }
             }
         }
 
@@ -71,19 +77,25 @@ namespace Chemistry_Studio
         {
             Node newNode = new Node();
             newNode.isHole = this.isHole;
+            newNode.data = this.data;
             newNode.outputType = this.outputType;
-            newNode.children = this.children.Select(i => (Node)i.Clone()).ToList();
+            if(this.children!=null)
+                newNode.children = this.children.Select(i => (Node)i.Clone()).ToList();
             return newNode;
         }
 
         public override string ToString()
         {
-            string output = this.data + "(";
-            foreach (Node x in this.children)
+            string output = this.data;
+            if (this.children.Count != 0)
             {
-                output = output + x.ToString();
+                output += "(";
+                foreach (Node x in this.children)
+                {
+                    output = output + x.ToString();
+                }
+                output = output + ")";
             }
-            output = output + ")";
             return output;
         }
     }
