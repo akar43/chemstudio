@@ -115,7 +115,7 @@ namespace Chemistry_Studio
           //  foreach(string temp in tokenFind(splitWords))
           //      Console.WriteLine(temp);
           //  Console.ReadLine();
-            List<string> tokens = new List<string>(new String[] { "IE", "x", "MAX" });
+            List<string> tokens = new List<string>(new String[] { "x", "IE", "y", "IE", "Same" });
             ParseTree tree = new ParseTree(new Node());
             //tree.root.children
             typeSafe(tokens, (ParseTree)tree.Clone());

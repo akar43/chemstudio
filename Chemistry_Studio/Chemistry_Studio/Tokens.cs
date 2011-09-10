@@ -15,11 +15,15 @@ namespace Chemistry_Studio
             outputTypePredicates = new Dictionary<string, string>();
             inputTypePredicates.Add("MAX", new List<string>(new string[]{"num"}));
             inputTypePredicates.Add("IE", new List<string>(new string[] { "elem" }));
+            inputTypePredicates.Add("Same", new List<string>(new string[] { "num", "num" }));
             inputTypePredicates.Add("x", new List<string>(new string[] { "null" }));
-
+            inputTypePredicates.Add("y", new List<string>(new string[] { "null" }));
+            
             outputTypePredicates.Add("MAX", "null");
+            outputTypePredicates.Add("Same", "null");
             outputTypePredicates.Add("IE", "num");
             outputTypePredicates.Add("x", "elem");
+            outputTypePredicates.Add("y", "elem");
         }
 
         public static Dictionary<string, string> tokenList;
