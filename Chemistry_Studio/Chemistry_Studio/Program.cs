@@ -7,7 +7,7 @@ namespace Chemistry_Studio
 {
     class Program
     {
-        static List<ParseTree> completeTrees;
+        static List<ParseTree> completeTrees=new List<ParseTree>();
         static Char[] delims = {' ',',',':','?','.','-'};
         private static bool remNullStr(String s)
         {
@@ -90,6 +90,7 @@ namespace Chemistry_Studio
             {
                 foreach (string tok in tokens)
                 {
+                    //Console.WriteLine("{0}\t{1}", Tokens.outputTypePredicates[tok], tree.holeList[0].outputType);
                     if(Tokens.outputTypePredicates[tok] == tree.holeList[0].outputType)
                     {
                         List<string> newTokens = tokens.Select(i => (string)i.Clone()).ToList();
@@ -114,13 +115,15 @@ namespace Chemistry_Studio
           //  foreach(string temp in tokenFind(splitWords))
           //      Console.WriteLine(temp);
           //  Console.ReadLine();
-            List<string> tokens = new List<string>(new String[] { "MAX", "IE", "x" });
+            List<string> tokens = new List<string>(new String[] { "IE", "x", "MAX" });
             ParseTree tree = new ParseTree(new Node());
-            typeSafe(tokens, tree);
+            //tree.root.children
+            typeSafe(tokens, (ParseTree)tree.Clone());
             foreach (ParseTree x in completeTrees)
             {
                 Console.WriteLine(x);
             }
+            //Console.ReadLine();
         }
     }
 }
