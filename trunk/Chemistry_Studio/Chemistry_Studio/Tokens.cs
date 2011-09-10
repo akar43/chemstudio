@@ -7,9 +7,24 @@ namespace Chemistry_Studio
 {
     static class Tokens
     {
-        public static Dictionary<string, string> tokenList = new Dictionary<string, string>();
+        public static Dictionary<string, List<string>> inputTypePredicates;
+        public static Dictionary<string, string> outputTypePredicates;
+        public static void initializePredSpec()
+        {
+            inputTypePredicates = new Dictionary<string,List<string>>();
+            outputTypePredicates = new Dictionary<string, string>();
+            inputTypePredicates.Add("MAX", new List<string>(new string[]{"num"}));
+            inputTypePredicates.Add("IE", new List<string>(new string[] { "elem" }));
+
+            outputTypePredicates.Add("MAX", "null");
+            outputTypePredicates.Add("FIE", "num");
+            outputTypePredicates.Add("x", "elem");
+        }
+
+        public static Dictionary<string, string> tokenList;
         public static void initialize()
         {
+            tokenList = new Dictionary<string, string>();
             tokenList.Add("h", "H");
             tokenList.Add("hydrogen", "H");
             tokenList.Add("he", "He");

@@ -7,7 +7,7 @@ namespace Chemistry_Studio
 {
     class Program
     {
-        static List<Node> completeTrees;
+        static List<ParseTree> completeTrees;
         static Char[] delims = {' ',',',':','?','.','-'};
         private static bool remNullStr(String s)
         {
@@ -69,42 +69,58 @@ namespace Chemistry_Studio
             return predicates;
         }
 
-        public static bool ifSatisfy(string tok, Node hole)
+        public static Node findNextHole(Node root)
         {
-            if (hole.data == 
-        }
-
-        public static Node updateTree(string tok, Node parseTree, List<Node> newHoleList)
-        {
-
-        }
-
-        public static void typeSafe(List<string> tokens, Node parseTree, List<Node> holeList)
-        {
-            if (tokens.Count() == 0) { completeTrees.Add(parseTree); return; }
-            foreach (string tok in tokens)
+            if (root.isHole == true) return root;
+            else
             {
-                if ifSatisfy(tok, holeList[0])
+                foreach (Node temp in root.children)
                 {
-                    List<string> newTokens = tokens.Select(i => (string)i.Clone()).ToList();
-                    Node newTree = (Node)parseTree.Clone();
+                    Node leftHole = findNextHole(temp);
+                    if (leftHole != null) return leftHole;
+                }
+                return null;
+            }
+        }
 
-                    Node newTree = updateTree(tok, parseTree, newHolelist);
-                    typeSafe(newTokens, newTree, newHoleList);
+        public static void typeSafe(List<string> tokens, ParseTree tree)
+        {
+            if (tokens.Count() == 0) { completeTrees.Add(tree); return; }
+            else
+            {
+                foreach (string tok in tokens)
+                {
+                    if(Tokens.outputTypePredicates[tok] == tree.holeList[0].outputType)
+                    {
+                        List<string> newTokens = tokens.Select(i => (string)i.Clone()).ToList();
+                        newTokens.Remove(tok);
+
+                        ParseTree newTree = (ParseTree)tree.Clone();
+                        newTree.holeList[0].holeFill(tok);
+                        typeSafe(newTokens, (ParseTree) newTree.Clone());
+                    }
                 }
             }
         }
 
         public static void Main(string[] args)
         {
-            string sentence = "Which element has the highest ionisation energy?";
-            Tokens.initialize();
-            sentence = sentence.ToLower();
-            List<string> splitWords = tokenize(sentence);
+           // string sentence = "Which element has the highest ionisation energy?";
+           // Tokens.initialize();
+            Tokens.initializePredSpec();
+           // sentence = sentence.ToLower();
+           // List<string> splitWords = tokenize(sentence);
             
-            foreach(string temp in tokenFind(splitWords))
-                Console.WriteLine(temp);
-            Console.ReadLine();
+          //  foreach(string temp in tokenFind(splitWords))
+          //      Console.WriteLine(temp);
+          //  Console.ReadLine();
+            List<string> tokens = new List<string>(new String[] { "MAX", "IE", "x" });
+            ParseTree tree = new ParseTree(new Node());
+            typeSafe(tokens, tree);
+            foreach (ParseTree x in completeTrees)
+            {
+                Console.WriteLine(x);
+            }
         }
     }
 }
