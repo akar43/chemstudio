@@ -60,7 +60,7 @@ namespace Chemistry_Studio
             this.isHole = false;
             this.data = label;
             this.children = new List<Node>();
-            Console.WriteLine(label);
+            
             List<string> param = Tokens.inputTypePredicates[label];
             if (param[0] != "null")
             {
