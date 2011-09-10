@@ -5,32 +5,86 @@ using System.Text;
 
 namespace Chemistry_Studio
 {
-    public class Node : ICloneable
+    public class ParseTree : ICloneable
     {
-        public string outputType;
-        public string data;
-        public List<Node> children;
-        public Node parent;
+        public Node root;
+        public List<Node> holeList;
 
-        public Node(Node parent)
+        public ParseTree(Node root)
         {
-            this.parent = parent;
-            children = new List<Node>();
+            this.root = root;
+            this.holeList = new List<Node>();
         }
 
-        public Node(string label, Node parent)
+        public static void DFSHoleClone(List<Node> holeList, Node root)
         {
-            this.parent = parent;
-            data = label;
-            children = new List<Node>();
+            if (root.isHole == true) holeList.Add(root);
+            else
+            {
+                foreach (Node temp in root.children)
+                {
+                    DFSHoleClone(holeList, temp);
+                }
+            }
         }
 
         public Object Clone()
         {
-            Node newNode = new Node(this.data, this.parent);
+            ParseTree newTree = new ParseTree((Node)this.root.Clone());
+            DFSHoleClone(newTree.holeList, newTree.root);
+            return newTree;
+        }
+
+        public override string ToString()
+        {
+            return root.ToString();
+        }
+    }
+
+    public class Node : ICloneable
+    {
+        public bool isHole;
+        public string outputType;
+        public string data;
+        public List<Node> children;
+
+        public Node()
+        {
+            this.isHole = true;
+        }
+
+        public void holeFill(string label)
+        {
+            this.isHole = false;
+            data = label;
+            children = new List<Node>();
+            List<string> param = Tokens.inputTypePredicates[label];
+            foreach (string x in param)
+            {
+                Node tempNode = new Node();     //check that it appends to end of list
+                this.children.Add(tempNode);
+                tempNode.outputType = (string)x.Clone();
+            }
+        }
+
+        public Object Clone()
+        {
+            Node newNode = new Node();
+            newNode.isHole = this.isHole;
             newNode.outputType = this.outputType;
             newNode.children = this.children.Select(i => (Node)i.Clone()).ToList();
             return newNode;
+        }
+
+        public override string ToString()
+        {
+            string output = this.data + "(";
+            foreach (Node x in this.children)
+            {
+                output = output + x.ToString();
+            }
+            output = output + ")";
+            return output;
         }
     }
 }
