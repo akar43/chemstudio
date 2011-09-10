@@ -15,9 +15,10 @@ namespace Chemistry_Studio
             outputTypePredicates = new Dictionary<string, string>();
             inputTypePredicates.Add("MAX", new List<string>(new string[]{"num"}));
             inputTypePredicates.Add("IE", new List<string>(new string[] { "elem" }));
+            inputTypePredicates.Add("x", new List<string>(new string[] { "null" }));
 
             outputTypePredicates.Add("MAX", "null");
-            outputTypePredicates.Add("FIE", "num");
+            outputTypePredicates.Add("IE", "num");
             outputTypePredicates.Add("x", "elem");
         }
 
