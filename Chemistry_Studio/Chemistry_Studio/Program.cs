@@ -5,6 +5,27 @@ using System.Text;
 
 namespace Chemistry_Studio
 {
+    class Pos_Conf
+    {
+        public List<double> conf;
+        public List<int> positions;
+
+        public Pos_Conf(double confidence, int position)
+        {
+            conf=new List<double>();
+            positions=new List<int>();
+            conf.Add(confidence);
+            positions.Add(position);
+        }
+
+        public void update(double confidence, int position)
+        {
+            positions.Add(position);
+            conf.Add(confidence);
+        }
+
+    }
+    
     class Program
     {
         static List<ParseTree> completeTrees=new List<ParseTree>();
@@ -92,11 +113,12 @@ namespace Chemistry_Studio
             return sortedDist;   
         }
 
-        static Dictionary<string,double> tokenFind(List<string> sentence)
+        static Dictionary<string,Pos_Conf> tokenFind(List<string> sentence)
         {
             int flag,minLength;
             List<string> token;
-            Dictionary<string,double> predicates = new Dictionary<string,double>();
+            int startPos = 0;
+            Dictionary<string,Pos_Conf> predicates = new Dictionary<string,Pos_Conf>();
             while (sentence.Count != 0)
             {
                 
@@ -110,7 +132,15 @@ namespace Chemistry_Studio
                     
                     if (conf > 0.75)
                     {
-                        predicates.Add(pair.Value,conf);
+                        if (predicates.ContainsKey(pair.Value))
+                        {
+                            predicates[pair.Value].update(conf, startPos);
+                        }
+                        else
+                        {
+                            Pos_Conf temp = new Pos_Conf(conf, startPos);
+                            predicates.Add(pair.Value, temp);
+                        }
                         
                         flag = 1;
                         if (minLength > token.Count)
@@ -118,9 +148,15 @@ namespace Chemistry_Studio
                     }
                 }
                 if (flag == 0)
+                {
                     sentence.RemoveAt(0);
+                    startPos += 1;
+                }
                 else
+                {
                     sentence.RemoveRange(0, minLength);
+                    startPos += minLength;
+                }
             }
             return predicates;
         }
@@ -141,16 +177,9 @@ namespace Chemistry_Studio
             return numOrder;
         }
 
-        
-        /*static List<int> substringMatch(List<string> sentence, string substring)
+        /*static List<int> numPredicatesFind(List<string> sentence, List<int> predsPos)
         {
-            List<string> substrList = tokenize(substring);
-        }
-
-
-        static List<int> numPredicatesFind(List<string> sentence, List<int> predsPos)
-        {
-            
+            List<string> 
             
         }*/
 
@@ -173,6 +202,8 @@ namespace Chemistry_Studio
             if (tokens.Count() == 0) { completeTrees.Add(tree); return; }
             else
             {
+                if (tree.holeList.Count == 0)
+                    return;
                 foreach (string tok in tokens)
                 {
                     //Console.WriteLine("{0}\t{1}", Tokens.outputTypePredicates[tok], tree.holeList[0].outputType);
@@ -193,31 +224,34 @@ namespace Chemistry_Studio
         {
             Tokens.initialize();
             Tokens.initializePredSpec();
-            /*
-            string sentence = "Which element has the highest ionisation energy?";
+            
+            /*string sentence = "Which element has the highest ionisation energy highest?";
             sentence = sentence.ToLower();
             List<string> splitWords = tokenize(sentence);
-            Dictionary<string,double> tokensConf = tokenFind(splitWords);
+            Dictionary<string,Pos_Conf> tokensConf = tokenFind(splitWords);
             //List<string> tokens = tokensConf.Keys.ToList();
-            foreach(KeyValuePair<string,double> temp in tokensConf)
-                Console.WriteLine(temp.Key+"\t"+temp.Value);
+            foreach (KeyValuePair<string, Pos_Conf> temp in tokensConf)
+            {
+                for (int i = 0; i < temp.Value.conf.Count; i++)
+                    Console.WriteLine(temp.Key + "\t" + temp.Value.conf[i] + "\t" + temp.Value.positions[i]);
+            }
             Console.ReadLine();
             //List<string> tokens = new List<string>(new String[] { "x", "IonicRadius", "y", "IE", "Same" });
-             * */
+            */
             ParseTree tree = new ParseTree(new Node());             
-            //Console.Write("Please enter the tokens you want to assemble: ");
-            //string input = Console.ReadLine();
-            //List<string> tokens = tokenize(input);
+            Console.Write("Please enter the tokens you want to assemble: ");
+            string input = Console.ReadLine();
+            List<string> tokens = tokenize(input);
             //string[] args1 = { "Max", "x", "IE" };
-            List<string> tokens = new List<string>(args);
+            //List<string> tokens = new List<string>(args);
             typeSafe(tokens, (ParseTree)tree.Clone());
             string output = "";
             foreach (ParseTree x in completeTrees)
             {
-                output=output+x+" ";
+                output=output+x+"\n";
             }
             Console.WriteLine(output);
-            //Console.ReadLine();
+            Console.ReadLine();
         }
     }
 }

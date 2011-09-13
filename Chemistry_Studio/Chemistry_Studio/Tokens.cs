@@ -283,7 +283,7 @@ namespace Chemistry_Studio
             //Initialize output types of predicates
             outputTypePredicates.Add("Max", "null");
             outputTypePredicates.Add("Min", "null");
-            outputTypePredicates.Add("Same", "null");
+            outputTypePredicates.Add("Same", "bool");
 
             outputTypePredicates.Add("Period", "num");
             outputTypePredicates.Add("Group", "num");
