@@ -9,6 +9,7 @@ namespace Chemistry_Studio
     {
         static List<ParseTree> completeTrees=new List<ParseTree>();
         static Char[] delims = {' ',',',':','?','.','-'};
+        static double threshold = 0.75;
         private static bool remNullStr(String s)
         {
             if (s.Length==0)
@@ -91,15 +92,15 @@ namespace Chemistry_Studio
             return sortedDist;   
         }
 
-        static List<string> tokenFind(List<string> sentence)
+        static Dictionary<string,double> tokenFind(List<string> sentence)
         {
             int flag,minLength;
             List<string> token;
-            List<string> predicates = new List<string>();
+            Dictionary<string,double> predicates = new Dictionary<string,double>();
             while (sentence.Count != 0)
             {
                 
-                flag = 0; minLength = 100;
+                flag = 0; minLength = int.MaxValue;
                 foreach (KeyValuePair<string, string> pair in Tokens.tokenList)
                 {
                     token = tokenize(pair.Key);
@@ -109,7 +110,7 @@ namespace Chemistry_Studio
                     
                     if (conf > 0.75)
                     {
-                        predicates.Add(pair.Value);
+                        predicates.Add(pair.Value,conf);
                         
                         flag = 1;
                         if (minLength > token.Count)
@@ -124,26 +125,34 @@ namespace Chemistry_Studio
             return predicates;
         }
 
-        static List<int> numFind(List<string> sentence, out List<int> numsInQues)
+        static Dictionary<int,List<string>> numFind(List<string> sentence, List<int> predsPos, List<string> predsOrder)
         {
-            numsInQues = new List<int>();
+            List<int> numsInQues = new List<int>();
             List<int> numPos = numberPos(sentence, numsInQues);
-            return numPos;
-        }
-
-        static Dictionary<int,List<string>> structFind(List<string> sentence, List<int> numPos)
-        {
-            string[] predsOrder = {"IE","Group","Period","Atomic Number","Oxidation State"};
-            Dictionary<int,List<string>> numOrder = new Dictionary<int,List<string>>();
-
+            Dictionary<int, List<string>> numOrder = new Dictionary<int, List<string>>();
             for (int i = 0; i < numPos.Count; i++)
             {
-                output += " " + numsInQues[i] + " - ";
-                List<int> temp = distOrder(numPos[i], numPreds);
-                for (int i = 0; i < temp.Count; i++)
-                    output += predsOrder[temp[i]] + "\t";
+                List<int> temp = distOrder(numPos[i], predsPos);
+                List<string> sortedOrder = new List<string>();
+                for (int j = 0; j < temp.Count; j++)
+                    sortedOrder.Add(predsOrder[temp[j]]);
+                numOrder.Add(numsInQues[i], sortedOrder);
             }
+            return numOrder;
         }
+
+        
+        /*static List<int> substringMatch(List<string> sentence, string substring)
+        {
+            List<string> substrList = tokenize(substring);
+        }
+
+
+        static List<int> numPredicatesFind(List<string> sentence, List<int> predsPos)
+        {
+            
+            
+        }*/
 
         public static Node findNextHole(Node root)
         {
@@ -182,18 +191,24 @@ namespace Chemistry_Studio
 
         public static void Main(string[] args)
         {
-           string sentence = "Which element has the highest ionisation energy?";
-           Tokens.initialize();
-           Tokens.initializePredSpec();
-           sentence = sentence.ToLower();
-           List<string> splitWords = tokenize(sentence);
-           List<string> tokens = tokenFind(splitWords); 
-           foreach(string temp in tokens)
-                Console.WriteLine(temp);
+            Tokens.initialize();
+            Tokens.initializePredSpec();
+            /*
+            string sentence = "Which element has the highest ionisation energy?";
+            sentence = sentence.ToLower();
+            List<string> splitWords = tokenize(sentence);
+            Dictionary<string,double> tokensConf = tokenFind(splitWords);
+            //List<string> tokens = tokensConf.Keys.ToList();
+            foreach(KeyValuePair<string,double> temp in tokensConf)
+                Console.WriteLine(temp.Key+"\t"+temp.Value);
             Console.ReadLine();
             //List<string> tokens = new List<string>(new String[] { "x", "IonicRadius", "y", "IE", "Same" });
-            ParseTree tree = new ParseTree(new Node());
-            //tree.root.children
+             * */
+            ParseTree tree = new ParseTree(new Node());             
+            Console.Write("Please enter the tokens you want to assemble: ");
+            string input = Console.ReadLine();
+            List<string> tokens = tokenize(input);
+
             typeSafe(tokens, (ParseTree)tree.Clone());
             foreach (ParseTree x in completeTrees)
             {
