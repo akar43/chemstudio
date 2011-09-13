@@ -51,7 +51,7 @@ namespace Chemistry_Studio
         public Node()
         {
             this.isHole = true;
-            this.outputType = "null";
+            this.outputType = "bool";
 
         }
 
