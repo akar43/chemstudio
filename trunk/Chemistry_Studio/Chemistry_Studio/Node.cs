@@ -90,9 +90,12 @@ namespace Chemistry_Studio
             if (this.children.Count != 0)
             {
                 output += "(";
-                foreach (Node x in this.children)
+                
+                for (int i=0;i<this.children.Count;i++)
                 {
-                    output = output + x.ToString();
+                    output = output + this.children[i].ToString();
+                    if (i != this.children.Count - 1)
+                        output = output + ",";
                 }
                 output = output + ")";
             }
