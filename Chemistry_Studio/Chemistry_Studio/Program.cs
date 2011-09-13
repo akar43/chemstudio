@@ -205,16 +205,19 @@ namespace Chemistry_Studio
             //List<string> tokens = new List<string>(new String[] { "x", "IonicRadius", "y", "IE", "Same" });
              * */
             ParseTree tree = new ParseTree(new Node());             
-            Console.Write("Please enter the tokens you want to assemble: ");
-            string input = Console.ReadLine();
-            List<string> tokens = tokenize(input);
-
+            //Console.Write("Please enter the tokens you want to assemble: ");
+            //string input = Console.ReadLine();
+            //List<string> tokens = tokenize(input);
+            //string[] args1 = { "Max", "x", "IE" };
+            List<string> tokens = new List<string>(args);
             typeSafe(tokens, (ParseTree)tree.Clone());
+            string output = "";
             foreach (ParseTree x in completeTrees)
             {
-                Console.WriteLine(x);
+                output=output+x+" ";
             }
-            Console.ReadLine();
+            Console.WriteLine(output);
+            //Console.ReadLine();
         }
     }
 }
