@@ -36,6 +36,61 @@ namespace Chemistry_Studio
             return conf;
         }
 
+        static List<int> sortPerm(List<int> inVec)
+        {
+            int temp, tempPos;
+            List<int> sortedPerm=new List<int>();
+
+            for (int i = 0; i < inVec.Count; i++)
+                sortedPerm.Add(i);
+            int j;
+            for (int i = 0; i < inVec.Count - 1; i++)
+            {
+                temp = inVec[i]; tempPos = i;
+                for (j = i + 1; j < inVec.Count; j++)
+                {
+                    if (inVec[j] < temp)
+                    {
+                        temp = inVec[j];
+                        tempPos = j;
+                    }
+                }
+                int temp11 = inVec[i];
+                inVec[i] = inVec[tempPos];
+                inVec[tempPos] = temp11;
+
+                temp11 = sortedPerm[i];
+                sortedPerm[i] = sortedPerm[tempPos];
+                sortedPerm[tempPos] = temp11;
+            }
+
+            return sortedPerm;
+        }
+
+        static List<int> numberPos(List<string> subStr, List<int> numsInQues)
+        {
+	        List<int> positions=new List<int>();
+            int temp = 0;
+	        for (int i =0; i<subStr.Count; i++)
+		        if (int.TryParse(subStr[i],out temp)) {
+			        positions.Add(i);
+			        numsInQues.Add(temp);
+		        }
+	        return positions;
+        }
+
+        static List<int> distOrder(int pos, List<int> numPreds)
+        {
+	        List<int> distances=new List<int>();
+            for(int i=0;i<numPreds.Count;i++)
+            {
+        
+                distances.Add(Math.Abs(pos-numPreds[i]));
+            }
+            List<int> sortedDist = sortPerm(distances);
+            return sortedDist;   
+        }
+
         static List<string> tokenFind(List<string> sentence)
         {
             int flag,minLength;
@@ -67,6 +122,27 @@ namespace Chemistry_Studio
                     sentence.RemoveRange(0, minLength);
             }
             return predicates;
+        }
+
+        static List<int> numFind(List<string> sentence, out List<int> numsInQues)
+        {
+            numsInQues = new List<int>();
+            List<int> numPos = numberPos(sentence, numsInQues);
+            return numPos;
+        }
+
+        static Dictionary<int,List<string>> structFind(List<string> sentence, List<int> numPos)
+        {
+            string[] predsOrder = {"IE","Group","Period","Atomic Number","Oxidation State"};
+            Dictionary<int,List<string>> numOrder = new Dictionary<int,List<string>>();
+
+            for (int i = 0; i < numPos.Count; i++)
+            {
+                output += " " + numsInQues[i] + " - ";
+                List<int> temp = distOrder(numPos[i], numPreds);
+                for (int i = 0; i < temp.Count; i++)
+                    output += predsOrder[temp[i]] + "\t";
+            }
         }
 
         public static Node findNextHole(Node root)
@@ -106,16 +182,16 @@ namespace Chemistry_Studio
 
         public static void Main(string[] args)
         {
-           // string sentence = "Which element has the highest ionisation energy?";
-           // Tokens.initialize();
-            Tokens.initializePredSpec();
-           // sentence = sentence.ToLower();
-           // List<string> splitWords = tokenize(sentence);
-            
-          //  foreach(string temp in tokenFind(splitWords))
-          //      Console.WriteLine(temp);
-          //  Console.ReadLine();
-            List<string> tokens = new List<string>(new String[] { "x", "IE", "y", "IE", "Same" });
+           string sentence = "Which element has the highest ionisation energy?";
+           Tokens.initialize();
+           Tokens.initializePredSpec();
+           sentence = sentence.ToLower();
+           List<string> splitWords = tokenize(sentence);
+           List<string> tokens = tokenFind(splitWords); 
+           foreach(string temp in tokens)
+                Console.WriteLine(temp);
+            Console.ReadLine();
+            //List<string> tokens = new List<string>(new String[] { "x", "IonicRadius", "y", "IE", "Same" });
             ParseTree tree = new ParseTree(new Node());
             //tree.root.children
             typeSafe(tokens, (ParseTree)tree.Clone());
@@ -123,7 +199,7 @@ namespace Chemistry_Studio
             {
                 Console.WriteLine(x);
             }
-            //Console.ReadLine();
+            Console.ReadLine();
         }
     }
 }
