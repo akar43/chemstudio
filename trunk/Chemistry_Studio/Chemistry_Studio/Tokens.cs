@@ -281,8 +281,8 @@ namespace Chemistry_Studio
             inputTypePredicates.Add("ununseptium", new List<string>(new string[] { "null" }));
             
             //Initialize output types of predicates
-            outputTypePredicates.Add("Max", "null");
-            outputTypePredicates.Add("Min", "null");
+            outputTypePredicates.Add("Max", "bool");
+            outputTypePredicates.Add("Min", "bool");
             outputTypePredicates.Add("Same", "bool");
 
             outputTypePredicates.Add("Period", "num");
