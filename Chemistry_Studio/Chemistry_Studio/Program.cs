@@ -197,24 +197,59 @@ namespace Chemistry_Studio
             }
         }
 
-        public static void typeSafe(List<string> tokens, ParseTree tree)
+        public static void typeSafe(List<string> unusedTokens, ParseTree tree, List<string> allTokens)
         {
-            if (tokens.Count() == 0) { completeTrees.Add(tree); return; }
-            else
+            if (tree.confidence < 0.4) return;
+            if (unusedTokens.Count() == 0)
             {
                 if (tree.holeList.Count == 0)
-                    return;
-                foreach (string tok in tokens)
+                { completeTrees.Add(tree); return; }
+                else
+                {
+                    //tokens finished but there are holes
+                    foreach (string tok in allTokens)
+                    {
+                        if (Tokens.outputTypePredicates[tok] == tree.holeList[0].outputType)
+                        {
+                            List<string> newTokens = new List<string>();
+                            ParseTree newTree = (ParseTree)tree.Clone();
+                            newTree.holeList[0].holeFill(tok);
+                            newTree.confidence *= 0.9;
+                            typeSafe(newTokens, (ParseTree)newTree.Clone(), allTokens);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if (tree.holeList.Count == 0) return;
+                bool flag = false;
+                foreach (string tok in unusedTokens)
                 {
                     //Console.WriteLine("{0}\t{1}", Tokens.outputTypePredicates[tok], tree.holeList[0].outputType);
-                    if(Tokens.outputTypePredicates[tok] == tree.holeList[0].outputType)
+                    if (Tokens.outputTypePredicates[tok] == tree.holeList[0].outputType)
                     {
-                        List<string> newTokens = tokens.Select(i => (string)i.Clone()).ToList();
+                        flag = true;
+                        List<string> newTokens = unusedTokens.Select(i => (string)i.Clone()).ToList();
                         newTokens.Remove(tok);
 
                         ParseTree newTree = (ParseTree)tree.Clone();
                         newTree.holeList[0].holeFill(tok);
-                        typeSafe(newTokens, (ParseTree) newTree.Clone());
+                        typeSafe(newTokens, (ParseTree)newTree.Clone(), allTokens);
+                    }
+                }
+                if (flag == false)
+                {
+                    foreach (string tok in allTokens)
+                    {
+                        if (Tokens.outputTypePredicates[tok] == tree.holeList[0].outputType)
+                        {
+                            List<string> newTokens = unusedTokens.Select(i => (string)i.Clone()).ToList();
+                            ParseTree newTree = (ParseTree)tree.Clone();
+                            newTree.holeList[0].holeFill(tok);
+                            newTree.confidence *= 0.9;
+                            typeSafe(newTokens, (ParseTree)newTree.Clone(), allTokens);
+                        }
                     }
                 }
             }
@@ -244,7 +279,7 @@ namespace Chemistry_Studio
             List<string> tokens = tokenize(input);
             //string[] args1 = { "Max", "x", "IE" };
             //List<string> tokens = new List<string>(args);
-            typeSafe(tokens, (ParseTree)tree.Clone());
+            typeSafe(tokens, (ParseTree)tree.Clone(), tokens);
             string output = "";
             foreach (ParseTree x in completeTrees)
             {

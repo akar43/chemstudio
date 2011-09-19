@@ -9,9 +9,11 @@ namespace Chemistry_Studio
     {
         public Node root;
         public List<Node> holeList;
+        public double confidence;
 
         public ParseTree(Node root)
         {
+            this.confidence = 1;
             this.root = root;
             this.holeList = new List<Node>();
         }
@@ -32,6 +34,7 @@ namespace Chemistry_Studio
         {
             ParseTree newTree = new ParseTree((Node)this.root.Clone());
             DFSHoleClone(newTree.holeList, newTree.root);
+            newTree.confidence = this.confidence;
             return newTree;
         }
 
@@ -50,9 +53,9 @@ namespace Chemistry_Studio
 
         public Node()
         {
+            this.data = "Hole";
             this.isHole = true;
             this.outputType = "bool";
-
         }
 
         public void holeFill(string label)
@@ -68,7 +71,7 @@ namespace Chemistry_Studio
                 {
                     Node tempNode = new Node();     //check that it appends to end of list
                     this.children.Add(tempNode);
-                    tempNode.outputType = (string)x.Clone();
+                    tempNode.outputType = x;
                 }
             }
         }
@@ -86,7 +89,9 @@ namespace Chemistry_Studio
 
         public override string ToString()
         {
-            string output = this.data;
+            string output;
+            if (this.isHole) { output = "Hole"; return output; }
+            output = this.data;
             if (this.children.Count != 0)
             {
                 output += "(";
