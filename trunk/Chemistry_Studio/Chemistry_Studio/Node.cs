@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Chemistry_Studio
 {
-    public class ParseTree : ICloneable
+    public class ParseTree : ICloneable, IComparable<ParseTree>
     {
         public Node root;
         public List<Node> holeList;
@@ -36,6 +36,11 @@ namespace Chemistry_Studio
             DFSHoleClone(newTree.holeList, newTree.root);
             newTree.confidence = this.confidence;
             return newTree;
+        }
+
+        public int CompareTo(ParseTree otherTree)
+        {
+            return this.confidence.CompareTo(otherTree.confidence); 
         }
 
         public override string ToString()

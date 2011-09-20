@@ -200,29 +200,26 @@ namespace Chemistry_Studio
         public static void typeSafe(List<string> unusedTokens, ParseTree tree, List<string> allTokens)
         {
             if (tree.confidence < 0.4) return;
+            if (tree.holeList.Count == 0)
+                { completeTrees.Add(tree); return; }
+
             if (unusedTokens.Count() == 0)
             {
-                if (tree.holeList.Count == 0)
-                { completeTrees.Add(tree); return; }
-                else
+                //tokens finished but there are holes
+                foreach (string tok in allTokens)
                 {
-                    //tokens finished but there are holes
-                    foreach (string tok in allTokens)
+                    if (Tokens.outputTypePredicates[tok] == tree.holeList[0].outputType)
                     {
-                        if (Tokens.outputTypePredicates[tok] == tree.holeList[0].outputType)
-                        {
-                            List<string> newTokens = new List<string>();
-                            ParseTree newTree = (ParseTree)tree.Clone();
-                            newTree.holeList[0].holeFill(tok);
-                            newTree.confidence *= 0.9;
-                            typeSafe(newTokens, (ParseTree)newTree.Clone(), allTokens);
-                        }
+                        List<string> newTokens = new List<string>();
+                        ParseTree newTree = (ParseTree)tree.Clone();
+                        newTree.holeList[0].holeFill(tok);
+                        newTree.confidence *= 0.9;
+                        typeSafe(newTokens, (ParseTree)newTree.Clone(), allTokens);
                     }
                 }
             }
             else
             {
-                if (tree.holeList.Count == 0) return;
                 bool flag = false;
                 foreach (string tok in unusedTokens)
                 {
@@ -273,20 +270,34 @@ namespace Chemistry_Studio
             Console.ReadLine();
             //List<string> tokens = new List<string>(new String[] { "x", "IonicRadius", "y", "IE", "Same" });
             */
+
             ParseTree tree = new ParseTree(new Node());             
-            Console.Write("Please enter the tokens you want to assemble: ");
-            string input = Console.ReadLine();
-            List<string> tokens = tokenize(input);
+            //Console.Write("Please enter the tokens you want to assemble: ");
+            //string input = Console.ReadLine();
+            //List<string> tokens = tokenize(input);
+
+            List<string> tokens = new List<string>(args);
+
             //string[] args1 = { "Max", "x", "IE" };
             //List<string> tokens = new List<string>(args);
-            typeSafe(tokens, (ParseTree)tree.Clone(), tokens);
-            string output = "";
-            foreach (ParseTree x in completeTrees)
+            try
             {
-                output=output+x+"\n";
+                typeSafe(tokens, (ParseTree)tree.Clone(), tokens);
+                string output = "";
+                completeTrees.Sort();
+                completeTrees.Reverse();
+                foreach (ParseTree x in completeTrees)
+                {
+                    output = output + x + " Confidence = " + x.confidence + " \n";
+                }
+
+                Console.WriteLine(output);
             }
-            Console.WriteLine(output);
-            Console.ReadLine();
+            catch(Exception e)
+            {
+                Console.WriteLine("Program Crashed! with message : " + e.ToString());
+            }
+            //Console.ReadLine();
         }
     }
 }
