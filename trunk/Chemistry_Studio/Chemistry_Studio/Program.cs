@@ -311,7 +311,7 @@ namespace Chemistry_Studio
                 Console.Write("{0}\t", numConfs.Key);
                 foreach (string pred in numConfs.Value)
                 {
-                    if (pred.IndexOf("NA") != -1)
+                    if (pred.IndexOf("NA") == -1)
                         Console.Write("{0} ", pred);
                 }
                 Console.WriteLine();
@@ -322,24 +322,27 @@ namespace Chemistry_Studio
             {
                 if (numericPreds.Contains(tokenStructs.Key))
                     continue;
-                ParseTree temp = new ParseTree(new Node());
-                temp.root.isHole = false;
-                temp.root.data = tokenStructs.Key;
-                temp.root.outputType = Tokens.outputTypePredicates[tokenStructs.Key];
-                //Set output type
-                temp.root.children = new List<Node>();
-
-                List<string> param = Tokens.inputTypePredicates[tokenStructs.Key];
-                if (param[0] != "null")
+                for(int i=0;i<tokenStructs.Value.positions.Count;i++)
                 {
-                    foreach (string x in param)
+                    ParseTree temp = new ParseTree(new Node());
+                    temp.root.isHole = false;
+                    temp.root.data = tokenStructs.Key;
+                    temp.root.outputType = Tokens.outputTypePredicates[tokenStructs.Key];
+                    //Set output type
+                    temp.root.children = new List<Node>();
+
+                    List<string> param = Tokens.inputTypePredicates[tokenStructs.Key];
+                    if (param[0] != "null")
                     {
-                        Node tempNode = new Node();     //check that it appends to end of list
-                        temp.root.children.Add(tempNode);
-                        tempNode.outputType = x;
+                        foreach (string x in param)
+                        {
+                            Node tempNode = new Node();     //check that it appends to end of list
+                            temp.root.children.Add(tempNode);
+                            tempNode.outputType = x;
+                        }
                     }
+                    tokenTrees.Add(temp);
                 }
-                tokenTrees.Add(temp);
             }
 
             foreach (KeyValuePair<int, List<string>> numConfs in nums)
@@ -365,8 +368,8 @@ namespace Chemistry_Studio
                 temp.root.children[0].children = new List<Node>();
                 int result;
                 int.TryParse(numConfs.Value[0].Split('#')[1],out result);
-                tokensConf[numConfs.Value[0].Split('#')[0]].positions.RemoveAt(result);
-                tokensConf[numConfs.Value[0].Split('#')[0]].conf.RemoveAt(result);
+                tokensConf[numConfs.Value[0].Split('#')[0]].conf[result]=0;
+                
                 temp.root.children[1].data = "" + numConfs.Value ;
                 temp.root.children[1].isHole = false;
                 tokenTrees.Add(temp);
@@ -377,9 +380,12 @@ namespace Chemistry_Studio
                 ParseTree temp = new ParseTree(new Node());
                 if (tokensConf.ContainsKey(pred))
                 {
-                    if (tokensConf[pred].positions.Count != 0)
+                    for (int i = 0; i < tokensConf[pred].positions.Count; i++)
                     {
-                        
+                        if (tokensConf[pred].conf[i] == 0)
+                            continue;
+
+
                         temp.root.isHole = false;
                         temp.root.data = pred;
                         temp.root.outputType = Tokens.outputTypePredicates[pred];
@@ -396,9 +402,11 @@ namespace Chemistry_Studio
                                 tempNode.outputType = x;
                             }
                         }
+                        tokenTrees.Add(temp);
+
                     }
                 }
-                tokenTrees.Add(temp);
+                    
             }
 
             ParseTree tree = new ParseTree(new Node());             
