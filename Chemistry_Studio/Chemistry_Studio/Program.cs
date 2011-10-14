@@ -205,9 +205,10 @@ namespace Chemistry_Studio
             if (tree.confidence < 0.4) return;
             if (tree.holeList.Count == 0)
             {
+                tree.standardForm();
                 bool flag = false;
                 foreach(ParseTree t in completeTrees)
-                    flag |= t.isEqual(tree);
+                    flag = flag || t.isEqual(tree);
                 if (!flag) completeTrees.Add(tree);
                 return;
             }
@@ -231,14 +232,19 @@ namespace Chemistry_Studio
             {
                 //there are unused tokens and holes to be filled
                 bool flag = false;
+                int counter = -1;
+
                 foreach (ParseTree tok in unusedTokens)
                 {
+                    counter++;
                     //Console.WriteLine("{0}\t{1}", Tokens.outputTypePredicates[tok], tree.holeList[0].outputType);
                     if (tok.root.outputType == tree.holeList[0].outputType)
                     {
                         flag = true;
                         List<ParseTree> newTokens = unusedTokens.Select(i => (ParseTree)i.Clone()).ToList();
-                        newTokens.Remove(tok);
+                        
+                        //newTokens.Remove(tok); //ERROR
+                        newTokens.RemoveAt(counter);
 
                         ParseTree newTree = (ParseTree)tree.Clone();
                         newTree.holeList[0].holeFill(tok);
@@ -271,7 +277,7 @@ namespace Chemistry_Studio
             
             //string sentence1 = "Which element has the highest ionisation energy 5 7 highest?";
             //string sentence = "Which element between group 3 and group 5 and oxidation state 2 ?";
-            //string sentence = "Which element has the maximum atomic radius ?";
+            //string sentence = "Which element has the maximum affinity to electron ?";
             string sentence = "Which element has the same group that of li";
             sentence = sentence.ToLower();
             List<string> splitWords = tokenize(sentence);

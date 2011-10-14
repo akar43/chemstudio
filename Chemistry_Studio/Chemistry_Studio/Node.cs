@@ -185,7 +185,7 @@ namespace Chemistry_Studio
                 flag = true;
                 int limit = this.children.Count;
                 for (int i = 0; i < limit; i++)
-                    flag &= this.children[i].isEqual(other.children[i]);
+                    flag = flag && this.children[i].isEqual(other.children[i]);
             }
             return flag;
         }
