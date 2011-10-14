@@ -58,7 +58,7 @@ namespace Chemistry_Studio
             return conf;
         }
 
-        static List<int> sortPerm(List<int> inVec)
+        public static List<int> sortPerm(List<int> inVec)
         {
             int temp, tempPos;
             List<int> sortedPerm=new List<int>();
@@ -200,20 +200,26 @@ namespace Chemistry_Studio
             }
         }
 
-        public static void typeSafe(List<string> unusedTokens, ParseTree tree, List<string> allTokens)
+        public static void typeSafe(List<ParseTree> unusedTokens, ParseTree tree, List<ParseTree> allTokens)
         {
             if (tree.confidence < 0.4) return;
             if (tree.holeList.Count == 0)
-                { completeTrees.Add(tree); return; }
+            {
+                bool flag = false;
+                foreach(ParseTree t in completeTrees)
+                    flag |= t.isEqual(tree);
+                if (!flag) completeTrees.Add(tree);
+                return;
+            }
 
             if (unusedTokens.Count() == 0)
             {
                 //tokens finished but there are holes
-                foreach (string tok in allTokens)
+                foreach (ParseTree tok in allTokens)
                 {
-                    if (Tokens.outputTypePredicates[tok] == tree.holeList[0].outputType)
+                    if (tok.root.outputType == tree.holeList[0].outputType)
                     {
-                        List<string> newTokens = new List<string>();
+                        List<ParseTree> newTokens = new List<ParseTree>();
                         ParseTree newTree = (ParseTree)tree.Clone();
                         newTree.holeList[0].holeFill(tok);
                         newTree.confidence *= 0.9;
@@ -223,14 +229,15 @@ namespace Chemistry_Studio
             }
             else
             {
+                //there are unused tokens and holes to be filled
                 bool flag = false;
-                foreach (string tok in unusedTokens)
+                foreach (ParseTree tok in unusedTokens)
                 {
                     //Console.WriteLine("{0}\t{1}", Tokens.outputTypePredicates[tok], tree.holeList[0].outputType);
-                    if (Tokens.outputTypePredicates[tok] == tree.holeList[0].outputType)
+                    if (tok.root.outputType == tree.holeList[0].outputType)
                     {
                         flag = true;
-                        List<string> newTokens = unusedTokens.Select(i => (string)i.Clone()).ToList();
+                        List<ParseTree> newTokens = unusedTokens.Select(i => (ParseTree)i.Clone()).ToList();
                         newTokens.Remove(tok);
 
                         ParseTree newTree = (ParseTree)tree.Clone();
@@ -240,11 +247,12 @@ namespace Chemistry_Studio
                 }
                 if (flag == false)
                 {
-                    foreach (string tok in allTokens)
+                    //none of the unused tokens can fill a hole - need to repeat some used token ?
+                    foreach (ParseTree tok in allTokens)
                     {
-                        if (Tokens.outputTypePredicates[tok] == tree.holeList[0].outputType)
+                        if (tok.root.outputType == tree.holeList[0].outputType)
                         {
-                            List<string> newTokens = unusedTokens.Select(i => (string)i.Clone()).ToList();
+                            List<ParseTree> newTokens = unusedTokens.Select(i => (ParseTree)i.Clone()).ToList();
                             ParseTree newTree = (ParseTree)tree.Clone();
                             newTree.holeList[0].holeFill(tok);
                             newTree.confidence *= 0.9;
