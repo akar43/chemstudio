@@ -23,9 +23,12 @@ namespace Chemistry_Studio
             if (root.isHole == true) holeList.Add(root);
             else
             {
-                foreach (Node temp in root.children)
+                if (root.children != null)
                 {
-                    DFSHoleClone(holeList, temp);
+                    foreach (Node temp in root.children)
+                    {
+                        DFSHoleClone(holeList, temp);
+                    }
                 }
             }
         }
