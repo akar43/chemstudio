@@ -188,7 +188,7 @@ namespace Chemistry_Studio
         {
             bool flag = false;
 
-            if (this.data == other.data && this.children.Count == other.children.Count)
+            if (this.data == other.data)
             {
                 flag = true;
                 if (this.children != null)
