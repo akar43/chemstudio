@@ -205,6 +205,7 @@ namespace Chemistry_Studio
             if (tree.confidence < 0.4) return;
             if (tree.holeList.Count == 0)
             {
+                tree.confidence *= (1 - (float)unusedTokens.Count / allTokens.Count);
                 tree.standardForm();
                 bool flag = false;
                 foreach(ParseTree t in completeTrees)
@@ -224,7 +225,7 @@ namespace Chemistry_Studio
                         ParseTree newTree = (ParseTree)tree.Clone();
                         newTree.holeList[0].holeFill(tok);
                         newTree.confidence *= 0.9;
-                        typeSafe(newTokens, (ParseTree)newTree.Clone(), allTokens);
+                        typeSafe(newTokens, (ParseTree)newTree.Clone    (), allTokens);
                     }
                 }
             }
@@ -278,18 +279,18 @@ namespace Chemistry_Studio
             //string sentence1 = "Which element has the highest ionisation energy 5 7 highest?";
             //string sentence = "Which element between group 3 and group 5 and oxidation state 2 ?";
             //string sentence = "Which element has the maximum affinity to electron ?";
-            string sentence = "Which element has same group group lithium?";
+            string sentence = "Which element is in Group 2";
             sentence = sentence.ToLower();
             List<string> splitWords = tokenize(sentence);
             List<string> splitWordsNum = tokenize(sentence);
             Dictionary<string,Pos_Conf> tokensConf = tokenFind(splitWords);
             //List<string> tokens = tokensConf.Keys.ToList();
-            foreach (KeyValuePair<string, Pos_Conf> temp in tokensConf)
+            /*foreach (KeyValuePair<string, Pos_Conf> temp in tokensConf)
             {
                 for (int i = 0; i < temp.Value.conf.Count; i++)
                     Console.WriteLine(temp.Key + "\t" + temp.Value.conf[i] + "\t" + temp.Value.positions[i]);
             }
-            Console.ReadLine();
+            Console.ReadLine();*/
             List<string> numericPreds = new List<string>(new string[] { "IE", "Group", "Period", "AtomicNumber", "OxidationState" });
             List<string> predsOrder = new List<string>();
             List<int> predsPos = new List<int>();
@@ -314,7 +315,8 @@ namespace Chemistry_Studio
 
             //List<string> tokens = new List<string>(new String[] { "x", "IonicRadius", "y", "IE", "Same" });
             Dictionary<int, List<string>> nums = numFind(splitWordsNum, predsPos, predsOrder);
-            foreach (KeyValuePair<int, List<string>> numConfs in nums)
+            
+            /*foreach (KeyValuePair<int, List<string>> numConfs in nums)
             {
                 Console.Write("{0}\t", numConfs.Key);
                 foreach (string pred in numConfs.Value)
@@ -323,7 +325,7 @@ namespace Chemistry_Studio
                         Console.Write("{0} ", pred);
                 }
                 Console.WriteLine();
-            }
+            }*/
             List<ParseTree> tokenTrees = new List<ParseTree>();
 
             foreach (KeyValuePair<string, Pos_Conf> tokenStructs in tokensConf)
@@ -374,11 +376,22 @@ namespace Chemistry_Studio
                 temp.root.children[0].data = numConfs.Value[0].Split('#')[0];
                 temp.root.children[0].isHole = false;
                 temp.root.children[0].children = new List<Node>();
+
+                param = Tokens.inputTypePredicates[temp.root.children[0].data];
+                if (param[0] != "null")
+                {
+                    foreach (string x in param)
+                    {
+                        Node tempNode = new Node();     //check that it appends to end of list
+                        temp.root.children[0].children.Add(tempNode);
+                        tempNode.outputType = x;
+                    }
+                }
                 int result;
                 int.TryParse(numConfs.Value[0].Split('#')[1],out result);
                 tokensConf[numConfs.Value[0].Split('#')[0]].conf[result]=0;
                 
-                temp.root.children[1].data = "" + numConfs.Value ;
+                temp.root.children[1].data = numConfs.Key.ToString();
                 temp.root.children[1].isHole = false;
                 tokenTrees.Add((ParseTree)temp.Clone());
             }
@@ -411,6 +424,7 @@ namespace Chemistry_Studio
                             }
                         }
                         tokenTrees.Add((ParseTree)temp.Clone());
+                        Console.WriteLine(temp.ToString());
 
                     }
                 }
@@ -426,8 +440,8 @@ namespace Chemistry_Studio
 
             //string[] args1 = { "Max", "x", "IE" };
             //List<string> tokens = new List<string>(args);
-            try
-            {
+            //try
+            //{
                 typeSafe(tokenTrees, (ParseTree)tree.Clone(), tokenTrees);
                 string output = "";
                 completeTrees.Sort();
@@ -438,11 +452,11 @@ namespace Chemistry_Studio
                 }
 
                 Console.WriteLine(output);
-            }
-            catch(Exception e)
-            {
-                Console.WriteLine("Program Crashed! with message : " + e.ToString());
-            }
+                /*}
+                catch(Exception e)
+                {
+                    Console.WriteLine("Program Crashed! with message : " + e.ToString());
+                }*/
             Console.ReadLine();
         }
     }
