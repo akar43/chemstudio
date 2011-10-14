@@ -269,8 +269,10 @@ namespace Chemistry_Studio
             Tokens.initialize();
             Tokens.initializePredSpec();
             
-            string sentence1 = "Which element has the highest ionisation energy 5 7 highest?";
-            string sentence = "Which element between group 3 and group 5 and oxidation state 2 ?";
+            //string sentence1 = "Which element has the highest ionisation energy 5 7 highest?";
+            //string sentence = "Which element between group 3 and group 5 and oxidation state 2 ?";
+            //string sentence = "Which element has the maximum atomic radius ?";
+            string sentence = "Which element has the same group that of li";
             sentence = sentence.ToLower();
             List<string> splitWords = tokenize(sentence);
             List<string> splitWordsNum = tokenize(sentence);
@@ -414,13 +416,13 @@ namespace Chemistry_Studio
             //string input = Console.ReadLine();
             //List<string> tokens = tokenize(input);
 
-            List<string> tokens = new List<string>(args);
+            //List<string> tokens = new List<string>(args);
 
             //string[] args1 = { "Max", "x", "IE" };
             //List<string> tokens = new List<string>(args);
-            /*try
+            try
             {
-                typeSafe(tokens, (ParseTree)tree.Clone(), tokens);
+                typeSafe(tokenTrees, (ParseTree)tree.Clone(), tokenTrees);
                 string output = "";
                 completeTrees.Sort();
                 completeTrees.Reverse();
@@ -434,7 +436,7 @@ namespace Chemistry_Studio
             catch(Exception e)
             {
                 Console.WriteLine("Program Crashed! with message : " + e.ToString());
-            }*/
+            }
             Console.ReadLine();
         }
     }

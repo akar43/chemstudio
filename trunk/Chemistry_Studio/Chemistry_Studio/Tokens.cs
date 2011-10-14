@@ -9,6 +9,22 @@ namespace Chemistry_Studio
     {
         public static Dictionary<string, List<string>> inputTypePredicates;
         public static Dictionary<string, string> outputTypePredicates;
+        public static string[] outputTypeList = {
+            "Max#bool", "Min#bool", "Same#bool", "Period#num", "Group#num", "AtomicNumber#num", "OxidationState#num", "IonicRadius#num",
+            "AtomicRadius#num", "IE#num", "Metallic#num", "Electronegativity#num", "ElectronAffinity#num", "Conductance#num", "Halogen#bool",
+            "GasAtSTP#bool", "LiquidAtSTP#bool", "Metalloid#bool", "NobleGas#bool", "AlkaliMetal#bool", "AlkalineEarthMetal#bool",
+            "RareEarthElement#bool", "IonicBond#bool", "CovalentBond#bool", "And#bool", "Or#bool", "x#elem", "z#elem", "H#elem", "He#elem",
+            "Li#elem", "Be#elem", "B#elem", "C#elem", "N#elem", "O#elem", "F#elem", "Ne#elem", "Na#elem", "Mg#elem", "Al#elem", "Si#elem",
+            "P#elem", "S#elem", "Cl#elem", "K#elem", "Ar#elem", "Ca#elem", "Sc#elem", "Ti#elem", "V#elem", "Cr#elem", "Mn#elem", "Fe#elem",
+            "Ni#elem", "Co#elem", "Cu#elem", "Zn#elem", "Ga#elem", "Ge#elem", "As#elem", "Se#elem", "Br#elem", "Kr#elem", "Rb#elem", "Sr#elem",
+            "Y#elem", "Zr#elem", "Nb#elem", "Mo#elem", "Tc#elem", "Ru#elem", "Rh#elem", "Pd#elem", "Ag#elem", "Cd#elem", "In#elem", "Sn#elem",
+            "Sb#elem", "I#elem", "Te#elem", "Xe#elem", "Cs#elem", "Ba#elem", "La#elem", "Ce#elem", "Pr#elem", "Nd#elem", "Pm#elem", "Sm#elem",
+            "Eu#elem", "Gd#elem", "Tb#elem", "Dy#elem", "Ho#elem", "Er#elem", "Tm#elem", "Yb#elem", "Lu#elem", "Hf#elem", "Ta#elem", "W#elem",
+            "Re#elem", "Os#elem", "Ir#elem", "Pt#elem", "Au#elem", "Hg#elem", "Tl#elem", "Pb#elem", "Bi#elem", "At#elem", "Po#elem", "Rn#elem",
+            "Fr#elem", "Ra#elem", "Ac#elem", "Pa#elem", "Th#elem", "Np#elem", "U#elem", "Am#elem", "Pu#elem", "Cm#elem", "Bk#elem", "Cf#elem",
+            "Es#elem", "Fm#elem", "Md#elem", "No#elem", "Rf#elem", "Lr#elem", "Db#elem", "Bh#elem", "Sg#elem", "Hs#elem", "Mt#elem", "Ds#elem",
+            "Rg#elem", "Uut#elem", "Cn#elem", "Uup#elem", "Uuq#elem", "Uuh#elem", "Uuo#elem", "Uus#elem" };
+
         public static string[] inputTypeList = {"H#null","He#null","lithium#null","Be#null","B#null","C#null","N#null","O#null","F#null","Ne#null","Na#null","Mg#null",
         "Al#null","Si#null","P#null","S#null","Cl#null","K#null","Ar#null","Ca#null","Sc#null","V#null","Cr#null","mn#null","Fe#null",
         "Ni#null","Co#null","Cu#null","Zn#null","Ga#null","Ge#null","As#null","Se#null","Br#null","Kr#null","Rb#null","Sr#null","Y#null",
@@ -28,275 +44,23 @@ namespace Chemistry_Studio
             inputTypePredicates = new Dictionary<string,List<string>>();
             outputTypePredicates = new Dictionary<string, string>();
             //Initialize input types of predicates
-            
-            //Initialize output types of predicates
-            outputTypePredicates.Add("Max", "bool");
-            outputTypePredicates.Add("Min", "bool");
-            outputTypePredicates.Add("Same", "bool");
 
-            outputTypePredicates.Add("Period", "num");
-            outputTypePredicates.Add("Group", "num");
-            outputTypePredicates.Add("AtomicNumber", "num");
-            outputTypePredicates.Add("OxidationState", "num");
-            outputTypePredicates.Add("IonicRadius", "num");
-            outputTypePredicates.Add("AtomicRadius", "num");
-            outputTypePredicates.Add("IE", "num");
-            outputTypePredicates.Add("Metallic", "num");
-            outputTypePredicates.Add("Electronegativity", "num");
-            outputTypePredicates.Add("ElectronAffinity", "num");
-            outputTypePredicates.Add("Conductance", "num");
+            foreach (string str in inputTypeList)
+            {
+                string[] temp = str.Split('#');
+                if (temp.Length == 2)
+                    inputTypePredicates.Add(temp[0], new List<string>(new string[] { temp[1] }));
+                if (temp.Length == 3)
+                    inputTypePredicates.Add(temp[0], new List<string>(new string[] { temp[1], temp[2] }));
+                if (temp.Length == 4)
+                    inputTypePredicates.Add(temp[0], new List<string>(new string[] { temp[1], temp[3] }));
+            }   
 
-            outputTypePredicates.Add("Halogen", "bool");
-            outputTypePredicates.Add("GasAtSTP", "bool");
-            outputTypePredicates.Add("LiquidAtSTP", "bool");
-            outputTypePredicates.Add("Metalloid", "bool");
-            outputTypePredicates.Add("NobleGas", "bool");
-            outputTypePredicates.Add("AlkaliMetal", "bool");
-            outputTypePredicates.Add("AlkalineEarthMetal", "bool");
-            outputTypePredicates.Add("RareEarthElement", "bool");
-            outputTypePredicates.Add("IonicBond", "bool");
-            outputTypePredicates.Add("CovalentBond", "bool");
-            outputTypePredicates.Add("And", "bool");
-            outputTypePredicates.Add("Or", "bool");
-
-            outputTypePredicates.Add("x", "elem");
-            //outputTypePredicates.Add("y", "elem");
-            outputTypePredicates.Add("z", "elem");
-            outputTypePredicates.Add("h", "elem");
-            outputTypePredicates.Add("hydrogen", "elem");
-            outputTypePredicates.Add("he", "elem");
-            outputTypePredicates.Add("helium", "elem");
-            outputTypePredicates.Add("li", "elem");
-            outputTypePredicates.Add("lithium", "elem");
-            outputTypePredicates.Add("be", "elem");
-            outputTypePredicates.Add("beryllium", "elem");
-            outputTypePredicates.Add("b", "elem");
-            outputTypePredicates.Add("boron", "elem");
-            outputTypePredicates.Add("c", "elem");
-            outputTypePredicates.Add("carbon", "elem");
-            outputTypePredicates.Add("n", "elem");
-            outputTypePredicates.Add("nitrogen", "elem");
-            outputTypePredicates.Add("o", "elem");
-            outputTypePredicates.Add("oxygen", "elem");
-            outputTypePredicates.Add("f", "elem");
-            outputTypePredicates.Add("fluorine", "elem");
-            outputTypePredicates.Add("ne", "elem");
-            outputTypePredicates.Add("neon", "elem");
-            outputTypePredicates.Add("na", "elem");
-            outputTypePredicates.Add("sodium", "elem");
-            outputTypePredicates.Add("mg", "elem");
-            outputTypePredicates.Add("magnesium", "elem");
-            outputTypePredicates.Add("al", "elem");
-            outputTypePredicates.Add("aluminium", "elem");
-            outputTypePredicates.Add("si", "elem");
-            outputTypePredicates.Add("silicon", "elem");
-            outputTypePredicates.Add("p", "elem");
-            outputTypePredicates.Add("phosphorus", "elem");
-            outputTypePredicates.Add("s", "elem");
-            outputTypePredicates.Add("sulfur", "elem");
-            outputTypePredicates.Add("cl", "elem");
-            outputTypePredicates.Add("chlorine", "elem");
-            outputTypePredicates.Add("k", "elem");
-            outputTypePredicates.Add("potassium", "elem");
-            outputTypePredicates.Add("ar", "elem");
-            outputTypePredicates.Add("argon", "elem");
-            outputTypePredicates.Add("ca", "elem");
-            outputTypePredicates.Add("sc", "elem");
-            outputTypePredicates.Add("scandium", "elem");
-            outputTypePredicates.Add("ti", "elem");
-            outputTypePredicates.Add("titanium", "elem");
-            outputTypePredicates.Add("v", "elem");
-            outputTypePredicates.Add("vanadium", "elem");
-            outputTypePredicates.Add("cr", "elem");
-            outputTypePredicates.Add("chromium", "elem");
-            outputTypePredicates.Add("mn", "elem");
-            outputTypePredicates.Add("manganese", "elem");
-            outputTypePredicates.Add("fe", "elem");
-            outputTypePredicates.Add("iron", "elem");
-            outputTypePredicates.Add("ni", "elem");
-            outputTypePredicates.Add("nickel", "elem");
-            outputTypePredicates.Add("co", "elem");
-            outputTypePredicates.Add("cobalt", "elem");
-            outputTypePredicates.Add("cu", "elem");
-            outputTypePredicates.Add("copper", "elem");
-            outputTypePredicates.Add("zn", "elem");
-            outputTypePredicates.Add("zinc", "elem");
-            outputTypePredicates.Add("ga", "elem");
-            outputTypePredicates.Add("gallium", "elem");
-            outputTypePredicates.Add("ge", "elem");
-            outputTypePredicates.Add("germanium", "elem");
-            outputTypePredicates.Add("as", "elem");
-            outputTypePredicates.Add("arsenic", "elem");
-            outputTypePredicates.Add("se", "elem");
-            outputTypePredicates.Add("selenium", "elem");
-            outputTypePredicates.Add("br", "elem");
-            outputTypePredicates.Add("bromine", "elem");
-            outputTypePredicates.Add("kr", "elem");
-            outputTypePredicates.Add("krypton", "elem");
-            outputTypePredicates.Add("rb", "elem");
-            outputTypePredicates.Add("rubidium", "elem");
-            outputTypePredicates.Add("sr", "elem");
-            outputTypePredicates.Add("strontium", "elem");
-            outputTypePredicates.Add("y", "elem");
-            outputTypePredicates.Add("yttrium", "elem");
-            outputTypePredicates.Add("zr", "elem");
-            outputTypePredicates.Add("zirconium", "elem");
-            outputTypePredicates.Add("nb", "elem");
-            outputTypePredicates.Add("niobium", "elem");
-            outputTypePredicates.Add("mo", "elem");
-            outputTypePredicates.Add("molybdenum", "elem");
-            outputTypePredicates.Add("tc", "elem");
-            outputTypePredicates.Add("technetium", "elem");
-            outputTypePredicates.Add("ru", "elem");
-            outputTypePredicates.Add("ruthenium", "elem");
-            outputTypePredicates.Add("rh", "elem");
-            outputTypePredicates.Add("rhodium", "elem");
-            outputTypePredicates.Add("pd", "elem");
-            outputTypePredicates.Add("palladium", "elem");
-            outputTypePredicates.Add("ag", "elem");
-            outputTypePredicates.Add("silver", "elem");
-            outputTypePredicates.Add("cd", "elem");
-            outputTypePredicates.Add("cadmium", "elem");
-            outputTypePredicates.Add("in", "elem");
-            outputTypePredicates.Add("indium", "elem");
-            outputTypePredicates.Add("sn", "elem");
-            outputTypePredicates.Add("tin", "elem");
-            outputTypePredicates.Add("sb", "elem");
-            outputTypePredicates.Add("antimony", "elem");
-            outputTypePredicates.Add("i", "elem");
-            outputTypePredicates.Add("iodine", "elem");
-            outputTypePredicates.Add("te", "elem");
-            outputTypePredicates.Add("tellurium", "elem");
-            outputTypePredicates.Add("xe", "elem");
-            outputTypePredicates.Add("xenon", "elem");
-            outputTypePredicates.Add("cs", "elem");
-            outputTypePredicates.Add("caesium", "elem");
-            outputTypePredicates.Add("ba", "elem");
-            outputTypePredicates.Add("barium", "elem");
-            outputTypePredicates.Add("la", "elem");
-            outputTypePredicates.Add("lanthanum", "elem");
-            outputTypePredicates.Add("ce", "elem");
-            outputTypePredicates.Add("cerium", "elem");
-            outputTypePredicates.Add("pr", "elem");
-            outputTypePredicates.Add("praseodymium", "elem");
-            outputTypePredicates.Add("nd", "elem");
-            outputTypePredicates.Add("neodymium", "elem");
-            outputTypePredicates.Add("pm", "elem");
-            outputTypePredicates.Add("promethium", "elem");
-            outputTypePredicates.Add("sm", "elem");
-            outputTypePredicates.Add("samarium", "elem");
-            outputTypePredicates.Add("eu", "elem");
-            outputTypePredicates.Add("europium", "elem");
-            outputTypePredicates.Add("gd", "elem");
-            outputTypePredicates.Add("gadolinium", "elem");
-            outputTypePredicates.Add("tb", "elem");
-            outputTypePredicates.Add("terbium", "elem");
-            outputTypePredicates.Add("dy", "elem");
-            outputTypePredicates.Add("dysprosium", "elem");
-            outputTypePredicates.Add("ho", "elem");
-            outputTypePredicates.Add("holmium", "elem");
-            outputTypePredicates.Add("er", "elem");
-            outputTypePredicates.Add("erbium", "elem");
-            outputTypePredicates.Add("tm", "elem");
-            outputTypePredicates.Add("thulium", "elem");
-            outputTypePredicates.Add("yb", "elem");
-            outputTypePredicates.Add("ytterbium", "elem");
-            outputTypePredicates.Add("lu", "elem");
-            outputTypePredicates.Add("lutetium", "elem");
-            outputTypePredicates.Add("hf", "elem");
-            outputTypePredicates.Add("hafnium", "elem");
-            outputTypePredicates.Add("ta", "elem");
-            outputTypePredicates.Add("tantalum", "elem");
-            outputTypePredicates.Add("w", "elem");
-            outputTypePredicates.Add("tungsten", "elem");
-            outputTypePredicates.Add("re", "elem");
-            outputTypePredicates.Add("rhenium", "elem");
-            outputTypePredicates.Add("os", "elem");
-            outputTypePredicates.Add("osmium", "elem");
-            outputTypePredicates.Add("ir", "elem");
-            outputTypePredicates.Add("iridium", "elem");
-            outputTypePredicates.Add("pt", "elem");
-            outputTypePredicates.Add("platinum", "elem");
-            outputTypePredicates.Add("au", "elem");
-            outputTypePredicates.Add("gold", "elem");
-            outputTypePredicates.Add("hg", "elem");
-            outputTypePredicates.Add("mercury", "elem");
-            outputTypePredicates.Add("tl", "elem");
-            outputTypePredicates.Add("thallium", "elem");
-            outputTypePredicates.Add("pb", "elem");
-            outputTypePredicates.Add("lead", "elem");
-            outputTypePredicates.Add("bi", "elem");
-            outputTypePredicates.Add("bismuth", "elem");
-            outputTypePredicates.Add("at", "elem");
-            outputTypePredicates.Add("astatine", "elem");
-            outputTypePredicates.Add("po", "elem");
-            outputTypePredicates.Add("polonium", "elem");
-            outputTypePredicates.Add("rn", "elem");
-            outputTypePredicates.Add("radon", "elem");
-            outputTypePredicates.Add("fr", "elem");
-            outputTypePredicates.Add("francium", "Fr");
-            outputTypePredicates.Add("ra", "elem");
-            outputTypePredicates.Add("radium", "elem");
-            outputTypePredicates.Add("ac", "elem");
-            outputTypePredicates.Add("actinium", "elem");
-            outputTypePredicates.Add("pa", "elem");
-            outputTypePredicates.Add("protactinium", "elem");
-            outputTypePredicates.Add("th", "elem");
-            outputTypePredicates.Add("thorium", "elem");
-            outputTypePredicates.Add("np", "elem");
-            outputTypePredicates.Add("neptunium", "elem");
-            outputTypePredicates.Add("u", "elem");
-            outputTypePredicates.Add("uranium", "elem");
-            outputTypePredicates.Add("am", "elem");
-            outputTypePredicates.Add("americium", "elem");
-            outputTypePredicates.Add("pu", "elem");
-            outputTypePredicates.Add("plutonium", "elem");
-            outputTypePredicates.Add("cm", "elem");
-            outputTypePredicates.Add("curium", "elem");
-            outputTypePredicates.Add("bk", "elem");
-            outputTypePredicates.Add("berkelium", "elem");
-            outputTypePredicates.Add("cf", "elem");
-            outputTypePredicates.Add("californium", "elem");
-            outputTypePredicates.Add("es", "elem");
-            outputTypePredicates.Add("einsteinium", "elem");
-            outputTypePredicates.Add("fm", "elem");
-            outputTypePredicates.Add("fermium", "elem");
-            outputTypePredicates.Add("md", "elem");
-            outputTypePredicates.Add("mendelevium", "elem");
-            outputTypePredicates.Add("no", "elem");
-            outputTypePredicates.Add("nobelium", "elem");
-            outputTypePredicates.Add("rf", "elem");
-            outputTypePredicates.Add("rutherfordium", "elem");
-            outputTypePredicates.Add("lr", "elem");
-            outputTypePredicates.Add("lawrencium", "elem");
-            outputTypePredicates.Add("db", "elem");
-            outputTypePredicates.Add("dubnium", "elem");
-            outputTypePredicates.Add("bh", "elem");
-            outputTypePredicates.Add("bohrium", "elem");
-            outputTypePredicates.Add("sg", "elem");
-            outputTypePredicates.Add("seaborgium", "elem");
-            outputTypePredicates.Add("hs", "elem");
-            outputTypePredicates.Add("hassium", "elem");
-            outputTypePredicates.Add("mt", "Mt");
-            outputTypePredicates.Add("meitnerium", "elem");
-            outputTypePredicates.Add("ds", "Ds");
-            outputTypePredicates.Add("darmstadtium", "elem");
-            outputTypePredicates.Add("rg", "Rg");
-            outputTypePredicates.Add("roentgenium", "elem");
-            outputTypePredicates.Add("uut", "Uut");
-            outputTypePredicates.Add("ununtrium", "elem");
-            outputTypePredicates.Add("cn", "Cn");
-            outputTypePredicates.Add("copernicium", "elem");
-            outputTypePredicates.Add("uup", "Uup");
-            outputTypePredicates.Add("ununpentium", "elem");
-            outputTypePredicates.Add("uuq", "Uuq");
-            outputTypePredicates.Add("ununquadium", "elem");
-            outputTypePredicates.Add("uuh", "Uuh");
-            outputTypePredicates.Add("ununhexium", "elem");
-            outputTypePredicates.Add("uuo", "Uuo");
-            outputTypePredicates.Add("ununoctium", "elem");
-            outputTypePredicates.Add("uus", "Uus");
-            outputTypePredicates.Add("ununseptium", "elem");
+            foreach (string str in outputTypeList) 
+            {
+                string[] temp = str.Split('#');
+                outputTypePredicates.Add(temp[0], temp[1]);
+            }   
         }
 
         public static Dictionary<string, string> tokenList;
