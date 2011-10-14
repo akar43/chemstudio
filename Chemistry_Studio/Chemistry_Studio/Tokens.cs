@@ -28,6 +28,8 @@ namespace Chemistry_Studio
             inputTypePredicates.Add("IonicBond", new List<string>(new string[] { "elem" ,"elem"}));
             inputTypePredicates.Add("CovalentBond", new List<string>(new string[] { "elem","elem" }));
 
+            inputTypePredicates.Add("AtomicNumber", new List<string>(new string[] { "elem" }));
+            inputTypePredicates.Add("OxidationState", new List<string>(new string[] { "elem" }));
             inputTypePredicates.Add("Electronegativity", new List<string>(new string[] { "elem" }));
             inputTypePredicates.Add("ElectronAffinity", new List<string>(new string[] { "elem" }));
             inputTypePredicates.Add("Conductance", new List<string>(new string[] { "elem" }));
@@ -287,6 +289,8 @@ namespace Chemistry_Studio
 
             outputTypePredicates.Add("Period", "num");
             outputTypePredicates.Add("Group", "num");
+            outputTypePredicates.Add("AtomicNumber", "num");
+            outputTypePredicates.Add("OxidationState", "num");
             outputTypePredicates.Add("IonicRadius", "num");
             outputTypePredicates.Add("AtomicRadius", "num");
             outputTypePredicates.Add("IE", "num");
