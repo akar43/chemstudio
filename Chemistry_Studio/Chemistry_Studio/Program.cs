@@ -276,16 +276,11 @@ namespace Chemistry_Studio
             Tokens.initialize();
             Tokens.initializePredSpec();
             
-            //string sentence1 = "Which element has the highest ionisation energy 5 7 highest?";
-            //string sentence = "Which element between group 3 and group 5 and oxidation state 2 ?";
+            //string sentence = "Which element has the highest ionisation energy ?";
+            string sentence = "Which of the following elements has the smallest atomic radius";
+            //string sentence = "Which element between group 3 and group 5 ";
             //string sentence = "Which element has the maximum affinity to electron ?";
-            //string sentence = "Which element has atomic number 2";
-            //string sentence = "Which element has same group group lithium?";
-            //string sentence = "Which element is in Group 2";
-
-            string sentence = ""; 
-            foreach (string str in args)
-                sentence += " " + str;
+            //string sentence = "Which element is in Group 2 and period 3";
             sentence = sentence.ToLower();
             List<string> splitWords = tokenize(sentence);
             List<string> splitWordsNum = tokenize(sentence);
@@ -430,7 +425,7 @@ namespace Chemistry_Studio
                             }
                         }
                         tokenTrees.Add((ParseTree)temp.Clone());
-                        Console.WriteLine(temp.ToString());
+                        
 
                     }
                 }
@@ -463,7 +458,7 @@ namespace Chemistry_Studio
             {
                 Console.WriteLine("Program Crashed! with message : " + e.ToString());
             }
-            //Console.ReadLine();
+            Console.ReadLine();
         }
     }
 }
