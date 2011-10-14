@@ -187,12 +187,15 @@ namespace Chemistry_Studio
         public bool isEqual(Node other)
         {
             bool flag = false;
-            if (this.data == other.data && this.children.Count == other.children.Count)
+            if (this.data == other.data)
             {
                 flag = true;
-                int limit = this.children.Count;
-                for (int i = 0; i < limit; i++)
-                    flag = flag && this.children[i].isEqual(other.children[i]);
+                if (this.children != null)
+                {
+                    int limit = this.children.Count;
+                    for (int i = 0; i < limit; i++)
+                        flag = flag && this.children[i].isEqual(other.children[i]);
+                }
             }
             return flag;
         }
