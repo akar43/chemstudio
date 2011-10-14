@@ -277,10 +277,14 @@ namespace Chemistry_Studio
             Tokens.initializePredSpec();
             
             //string sentence = "Which element has the highest ionisation energy ?";
-            string sentence = "Which of the following elements has the smallest atomic radius";
+            //string sentence = "Which of the following elements has the smallest atomic radius";
             //string sentence = "Which element between group 3 and group 5 ";
             //string sentence = "Which element has the maximum affinity to electron ?";
             //string sentence = "Which element is in Group 2 and period 3";
+
+            string sentence = "";
+            foreach (string str in args)
+                sentence += " " + str;
             sentence = sentence.ToLower();
             List<string> splitWords = tokenize(sentence);
             List<string> splitWordsNum = tokenize(sentence);
@@ -425,8 +429,7 @@ namespace Chemistry_Studio
                             }
                         }
                         tokenTrees.Add((ParseTree)temp.Clone());
-                        
-
+                        //Console.WriteLine(temp.ToString());
                     }
                 }
                     
