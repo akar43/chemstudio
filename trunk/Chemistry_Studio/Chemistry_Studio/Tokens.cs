@@ -25,8 +25,8 @@ namespace Chemistry_Studio
             "Es#elem", "Fm#elem", "Md#elem", "No#elem", "Rf#elem", "Lr#elem", "Db#elem", "Bh#elem", "Sg#elem", "Hs#elem", "Mt#elem", "Ds#elem",
             "Rg#elem", "Uut#elem", "Cn#elem", "Uup#elem", "Uuq#elem", "Uuh#elem", "Uuo#elem", "Uus#elem" };
 
-        public static string[] inputTypeList = {"H#null","He#null","lithium#null","Be#null","B#null","C#null","N#null","O#null","F#null","Ne#null","Na#null","Mg#null",
-        "Al#null","Si#null","P#null","S#null","Cl#null","K#null","Ar#null","Ca#null","Sc#null","V#null","Cr#null","mn#null","Fe#null",
+        public static string[] inputTypeList = {"H#null","He#null","Li#null","Be#null","B#null","C#null","N#null","O#null","F#null","Ne#null","Na#null","Mg#null",
+        "Al#null","Si#null","P#null","S#null","Cl#null","K#null","Ar#null","Ca#null","Sc#null","V#null","Cr#null","Mn#null","Fe#null",
         "Ni#null","Co#null","Cu#null","Zn#null","Ga#null","Ge#null","As#null","Se#null","Br#null","Kr#null","Rb#null","Sr#null","Y#null",
         "Zr#null","Nb#null","Mo#null","Tc#null","Ru#null","Rh#null","Pd#null","Ag#null","Cd#null","In#null","Sn#null","Sb#null","I#null",
         "Te#null","Xe#null","Cs#null","Ba#null","La#null","Ce#null","Pr#null","Nd#null","Pm#null","Sm#null","Eu#null","Gd#null","Tb#null",
@@ -43,7 +43,6 @@ namespace Chemistry_Studio
         {
             inputTypePredicates = new Dictionary<string,List<string>>();
             outputTypePredicates = new Dictionary<string, string>();
-            //Initialize input types of predicates
 
             foreach (string str in inputTypeList)
             {
@@ -53,7 +52,7 @@ namespace Chemistry_Studio
                 if (temp.Length == 3)
                     inputTypePredicates.Add(temp[0], new List<string>(new string[] { temp[1], temp[2] }));
                 if (temp.Length == 4)
-                    inputTypePredicates.Add(temp[0], new List<string>(new string[] { temp[1], temp[3] }));
+                    inputTypePredicates.Add(temp[0], new List<string>(new string[] { temp[1], temp[2], temp[3] }));
             }   
 
             foreach (string str in outputTypeList) 
