@@ -119,6 +119,8 @@ namespace Chemistry_Studio
             string output;
             if (this.isHole) { output = "Hole"; return output; }
             output = this.data;
+            if (this.children == null)
+                return output;
             if (this.children.Count != 0)
             {
                 output += "(";
@@ -139,6 +141,8 @@ namespace Chemistry_Studio
         {
             List<string> inVec = new List<string>();
             List<Node> tempList = new List<Node>();
+            if (this.children == null)
+                return;
             foreach (Node t in this.children)
             {
                 tempList.Add(t);
