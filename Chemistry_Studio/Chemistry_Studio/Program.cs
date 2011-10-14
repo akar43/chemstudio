@@ -278,7 +278,7 @@ namespace Chemistry_Studio
             //string sentence1 = "Which element has the highest ionisation energy 5 7 highest?";
             //string sentence = "Which element between group 3 and group 5 and oxidation state 2 ?";
             //string sentence = "Which element has the maximum affinity to electron ?";
-            string sentence = "Which element has group 3 and period 4";
+            string sentence = "Which element has same group group lithium?";
             sentence = sentence.ToLower();
             List<string> splitWords = tokenize(sentence);
             List<string> splitWordsNum = tokenize(sentence);
@@ -334,7 +334,7 @@ namespace Chemistry_Studio
                 {
                     ParseTree temp = new ParseTree(new Node());
                     temp.root.isHole = false;
-                    temp.root.data = tokenStructs.Key+"#"+i;
+                    temp.root.data = tokenStructs.Key;
                     temp.root.outputType = Tokens.outputTypePredicates[tokenStructs.Key];
                     //Set output type
                     temp.root.children = new List<Node>();
@@ -395,7 +395,7 @@ namespace Chemistry_Studio
 
 
                         temp.root.isHole = false;
-                        temp.root.data = pred+"#"+i;
+                        temp.root.data = pred;
                         temp.root.outputType = Tokens.outputTypePredicates[pred];
                         //Set output type
                         temp.root.children = new List<Node>();
