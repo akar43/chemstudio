@@ -461,7 +461,7 @@ namespace Chemistry_Studio
             {
                 Console.WriteLine("Program Crashed! with message : " + e.ToString());
             }
-            Console.ReadLine();
+            //Console.ReadLine();
         }
     }
 }
