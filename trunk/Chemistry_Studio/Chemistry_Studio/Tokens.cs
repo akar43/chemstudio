@@ -92,7 +92,7 @@ namespace Chemistry_Studio
           "least#Min", "minimum#Min", "lowest#Min", "weakest#Min", "worst#Min", "electronegativity#Electronegativity", "metallic#Metallic",
           "increase#Increase", "decrease#Decrease", "electron affinity#ElectronAffinity", "conductor#Conductance", "quantum number#QuantumNumber",
           "color#Color", "orbital#Orbitals", "family#Family", "oxidation state#OxidationState", "oxidation number#OxidationState",
-          "ionization energy#IE", "atomic number#AtomicNumber", "group#Group", "period#Period", "element#x"};
+          "ionization energy#IE", "atomic number#AtomicNumber", "group#Group", "period#Period", "element#x", "same#Same"};
 
         public static void initialize()
         {
