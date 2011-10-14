@@ -141,6 +141,7 @@ namespace Chemistry_Studio
                 tempList.Add(t);
                 inVec.Add(t.data);
             }
+            this.children = new List<Node>();
            
             string temp;
             int tempPos;
@@ -169,7 +170,6 @@ namespace Chemistry_Studio
                 sortedPerm[tempPos] = temp3;
             }
 
-            this.children = new List<Node>();
             for(int i=0; i<tempList.Count; i++)
                 this.children.Add(tempList[sortedPerm[i]]);
             foreach(Node t in this.children)
