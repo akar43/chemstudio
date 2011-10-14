@@ -279,7 +279,13 @@ namespace Chemistry_Studio
             //string sentence1 = "Which element has the highest ionisation energy 5 7 highest?";
             //string sentence = "Which element between group 3 and group 5 and oxidation state 2 ?";
             //string sentence = "Which element has the maximum affinity to electron ?";
-            string sentence = "Which element is in Group 2";
+            //string sentence = "Which element has atomic number 2";
+            //string sentence = "Which element has same group group lithium?";
+            //string sentence = "Which element is in Group 2";
+
+            string sentence = ""; 
+            foreach (string str in args)
+                sentence += " " + str;
             sentence = sentence.ToLower();
             List<string> splitWords = tokenize(sentence);
             List<string> splitWordsNum = tokenize(sentence);
@@ -440,8 +446,8 @@ namespace Chemistry_Studio
 
             //string[] args1 = { "Max", "x", "IE" };
             //List<string> tokens = new List<string>(args);
-            //try
-            //{
+            try
+            {
                 typeSafe(tokenTrees, (ParseTree)tree.Clone(), tokenTrees);
                 string output = "";
                 completeTrees.Sort();
@@ -452,12 +458,12 @@ namespace Chemistry_Studio
                 }
 
                 Console.WriteLine(output);
-                /*}
-                catch(Exception e)
-                {
-                    Console.WriteLine("Program Crashed! with message : " + e.ToString());
-                }*/
-            Console.ReadLine();
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine("Program Crashed! with message : " + e.ToString());
+            }
+            //Console.ReadLine();
         }
     }
 }
