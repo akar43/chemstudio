@@ -187,7 +187,8 @@ namespace Chemistry_Studio
         public bool isEqual(Node other)
         {
             bool flag = false;
-            if (this.data == other.data)
+
+            if (this.data == other.data && this.children.Count == other.children.Count)
             {
                 flag = true;
                 if (this.children != null)
