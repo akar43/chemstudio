@@ -93,11 +93,14 @@ namespace Chemistry_Studio
         {
 	        List<int> positions=new List<int>();
             int temp = 0;
-	        for (int i =0; i<subStr.Count; i++)
-		        if (int.TryParse(subStr[i],out temp)) {
-			        positions.Add(i);
-			        numsInQues.Add(temp);
-		        }
+            for (int i = 0; i < subStr.Count; i++)
+            {
+                if (int.TryParse(subStr[i], out temp))
+                {
+                    positions.Add(i);
+                    numsInQues.Add(temp);
+                }
+            }
 	        return positions;
         }
 
@@ -297,7 +300,7 @@ namespace Chemistry_Studio
             {
                 Console.WriteLine("Program Crashed! with message : " + e.ToString());
             }
-            //Console.ReadLine();
+            Console.ReadLine();
         }
     }
 }
