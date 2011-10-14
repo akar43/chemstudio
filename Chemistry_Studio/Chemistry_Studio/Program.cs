@@ -58,12 +58,11 @@ namespace Chemistry_Studio
             return conf;
         }
 
-<<<<<<< .mine
+
         //Gives the sorting permutation of a list
-        static List<int> sortPerm(List<int> inVec)
-=======
+        
+
         public static List<int> sortPerm(List<int> inVec)
->>>>>>> .r28
         {
             int temp, tempPos;
             List<int> sortedPerm=new List<int>();
