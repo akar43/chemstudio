@@ -32,7 +32,7 @@ namespace Chemistry_Studio
         "Zr#null","Nb#null","Mo#null","Tc#null","Ru#null","Rh#null","Pd#null","Ag#null","Cd#null","Sn#null","Sb#null","I#null",
         "Te#null","Xe#null","Cs#null","Ba#null","La#null","Ce#null","Pr#null","Nd#null","Pm#null","Sm#null","Eu#null","Gd#null","Tb#null",
         "Dy#null","Ho#null","Er#null","Tm#null","Yb#null","Lu#null","Hf#null","Ta#null","W#null","Re#null","Os#null","Ir#null","Pt#null",
-        "Au#null","Hg#null","Tl#null","Pb#null","Bi#null","At#null","Po#null","Rn#null","Fr#null","Ra#null","Ac#null","Pa#null","Th#null",
+        "Au#null","Hg#null","Tl#null","Pb#null","Bi#null","Po#null","Rn#null","Fr#null","Ra#null","Ac#null","Pa#null","Th#null",
         "Np#null","U#null","Am#null","Pu#null","Cm#null","Bk#null","Cf#null","Es#null","Fm#null","Md#null","No#null","Rf#null","Lr#null",
         "Db#null","Bh#null","Sg#null","Hs#null","Mt#null","Ds#null","Rg#null","Uut#null","Cn#null","Uup#null","Uuq#null","Uuh#null",
         "Uuo#null","Uus#null","Max#num","Min#num","IE#elem","Halogen#elem","GasAtSTP#elem","LiquidAtSTP#elem","Metalloid#elem",
@@ -40,7 +40,7 @@ namespace Chemistry_Studio
         "AtomicNumber#elem","OxidationState#elem","Electronegativity#elem","ElectronAffinity#elem","Conductance#elem","IonicRadius#elem",
         "AtomicRadius#elem","Group#elem","Period#elem","Metallic#elem","Same#num#num","And#bool#bool","Or#bool#bool","x#null","z#null"};
 
-        //Excluded ,"As#null" and ,"In#null"
+        //Excluded ,"As#null" "In#null At#null"
         public static void initializePredSpec()
         {
             inputTypePredicates = new Dictionary<string,List<string>>();
@@ -79,7 +79,7 @@ namespace Chemistry_Studio
           "gadolinium#Gd", "tb#Tb", "terbium#Tb", "dy#Dy", "dysprosium#Dy", "ho#Ho", "holmium#Ho", "er#Er", "erbium#Er", "tm#Tm", "thulium#Tm",
           "yb#Yb", "ytterbium#Yb", "lu#Lu", "lutetium#Lu", "hf#Hf", "hafnium#Hf", "ta#Ta", "tantalum#Ta", "w#W", "tungsten#W", "re#Re", "rhenium#Re",
           "os#Os", "osmium#Os", "ir#Ir", "iridium#Ir", "pt#Pt", "platinum#Pt", "au#Au", "gold#Au", "hg#Hg", "mercury#Hg", "tl#Tl", "thallium#Tl",
-          "pb#Pb", "lead#Pb", "bi#Bi", "bismuth#Bi", "at#At", "astatine#At", "po#Po", "polonium#Po", "rn#Rn", "radon#Rn", "fr#Fr", "francium#Fr",
+          "pb#Pb", "lead#Pb", "bi#Bi", "bismuth#Bi",  "astatine#At", "po#Po", "polonium#Po", "rn#Rn", "radon#Rn", "fr#Fr", "francium#Fr",
           "ra#Ra", "radium#Ra", "ac#Ac", "actinium#Ac", "pa#Pa", "protactinium#Pa", "th#Th", "thorium#Th", "np#Np", "neptunium#Np", "u#U", "uranium#U",
           "am#Am", "americium#Am", "pu#Pu", "plutonium#Pu", "cm#Cm", "curium#Cm", "bk#Bk", "berkelium#Bk", "cf#Cf", "californium#Cf", "es#Es",
           "einsteinium#Es", "fm#Fm", "fermium#Fm", "md#Md", "mendelevium#Md", "no#No", "nobelium#No", "rf#Rf", "rutherfordium#Rf", "lr#Lr",
@@ -96,7 +96,7 @@ namespace Chemistry_Studio
           "color#Color", "orbital#Orbitals", "family#Family", "oxidation state#OxidationState", "oxidation number#OxidationState",
           "ionization energy#IE", "atomic number#AtomicNumber", "group#Group", "period#Period", "element#x", "same#Same", "and#And", "or#Or" };
 
-        //Excluded , "in#In" and , "as#As" 
+        //Excluded , "in#In"  "as#As" "at#At"
         public static void initialize()
         {
             tokenList = new Dictionary<string, string>();
