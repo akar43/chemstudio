@@ -35,7 +35,7 @@ namespace Chemistry_Studio
 
         public Object Clone()
         {
-            ParseTree newTree = new ParseTree((Node)this.root.Clone());
+            ParseTree newTree = new ParseTree((Node)this.root.Clone(null));
             DFSHoleClone(newTree.holeList, newTree.root);
             newTree.confidence = this.confidence;
             return newTree;
@@ -51,6 +51,13 @@ namespace Chemistry_Studio
             return root.ToString();
         }
 
+        public string XMLForm()
+        {
+            string output = "";
+            output += "<root>\n" + root.XMLForm() + "<root>\n";
+            return output;
+        }
+
         public void standardForm()
         {
             this.root.standardForm();
@@ -62,16 +69,26 @@ namespace Chemistry_Studio
         }
     }
 
-    public class Node : ICloneable
+    public class Node
     {
         public bool isHole;
         public string outputType;
         public string data;
         public List<Node> children;
+        public Node parent;
 
         public Node()
         {
-            this.data = "Hole";
+            this.parent = null;
+            this.data = "ZZ"; // zz as data represents a hole, reson for naming so is for lexical ordering
+            this.isHole = true;
+            this.outputType = "bool";
+        }
+
+        public Node(Node parent)
+        {
+            this.parent = parent;
+            this.data = "ZZ";
             this.isHole = true;
             this.outputType = "bool";
         }
@@ -100,17 +117,18 @@ namespace Chemistry_Studio
             this.isHole = false;
             this.outputType = subtree.root.outputType;
             this.data = subtree.root.data;
-            this.children = subtree.root.children.Select(i => (Node)i.Clone()).ToList();
+            this.children = subtree.root.children.Select(i => (Node)i.Clone(this)).ToList();
         }
 
-        public Object Clone()
+        public Object Clone(Node parent) //clones the subtree rooted at this node
         {
             Node newNode = new Node();
+            newNode.parent = parent;
             newNode.isHole = this.isHole;
             newNode.data = this.data;
             newNode.outputType = this.outputType;
             if(this.children!=null)
-                newNode.children = this.children.Select(i => (Node)i.Clone()).ToList();
+                newNode.children = this.children.Select(i => (Node)i.Clone(newNode)).ToList();
             return newNode;
         }
 
@@ -134,6 +152,76 @@ namespace Chemistry_Studio
                 output = output + ")";
             }
             return output;
+        }
+
+        public string XMLForm()
+        {
+            string output = "" ;
+            if (this.children == null || this.children.Count == 0)
+                output += "<leaf> " + this.data + " </leaf>\n";
+            else
+            {
+                output += "<" + this.data + ">\n";
+                foreach (Node t in this.children)
+                    output += t.XMLForm();
+                output += "</" + this.data + ">\n";
+            }
+            return output;
+        }
+
+        public string valueOfSubtree()
+        {
+            string output;
+            if (this.isHole) { output = "ZZ"; return output; }
+            output = this.data;
+            if (this.children == null)
+                return output;
+            if (this.children.Count != 0)
+            {
+                output += "(";
+
+                for (int i = 0; i < this.children.Count; i++)
+                {
+                    output = output + this.children[i].valueOfSubtree();
+                    if (i != this.children.Count - 1)
+                        output = output + ",";
+                }
+                output = output + ")";
+            }
+            return output;
+        }
+
+        public bool isVariableInSubtree()
+        {
+            if (Tokens.variableTokens.Contains(this.data)) return true;
+
+            bool flag = false;
+            if (this.children != null)
+            {
+                foreach(Node temp in this.children)
+                {
+                    flag = flag | temp.isVariableInSubtree();
+                }
+            }
+            return flag;
+        }
+
+        public bool checkForPermutation()
+        {
+            int num = this.children.Count;
+            for (int i =1; i < num; i++)
+            {
+                for (int j = i - 1; j < i; j++)
+                {
+                    if (this.children[i].outputType == this.children[j].outputType)
+                    {   
+                        if (string.Compare(this.children[i].valueOfSubtree() , this.children[j].valueOfSubtree()) < 0) return false;
+                    }
+                }
+            }
+
+            if (this.parent != null) return this.parent.checkForPermutation();
+            else return true;
         }
 
         // to be called by root of a parsetree only
