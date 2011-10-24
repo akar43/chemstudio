@@ -6,23 +6,23 @@ using System.Text;
 namespace Chemistry_Studio
 {
     //Structure to contain positions and confidences of tokens obtained during parse
-    class Pos_Conf
+    class Position_Confidence
     {
-        public List<double> conf;
+        public List<double> confidences;
         public List<int> positions;
 
-        public Pos_Conf(double confidence, int position)
+        public Position_Confidence(double confidence, int position)
         {
-            conf=new List<double>();
+            confidences=new List<double>();
             positions=new List<int>();
-            conf.Add(confidence);
+            confidences.Add(confidence);
             positions.Add(position);
         }
 
-        public void update(double confidence, int position)
+        public void add(double confidence, int position)
         {
             positions.Add(position);
-            conf.Add(confidence);
+            confidences.Add(confidence);
         }
     }
     
@@ -30,180 +30,176 @@ namespace Chemistry_Studio
     {
         static List<ParseTree> completeTrees=new List<ParseTree>();
         static Char[] delims = {' ',',',':','?','.','-'};
-        static double threshold = 0.75;
+        static double tokenMatch_threshold = 0.75;
         
         //Predicate to remove all null strings detected during the parse
-        private static bool remNullStr(String s)
+        private static bool isNullString(String s)
         {
-            if (s.Length==0)
-                return true;
+            if (s.Length==0) return true;
             else return false;
         }
         
-        //Tokenize the sentence
-        static List<string> tokenize(string inString)
+        //Split a sentence into tokens
+        static List<string> tokenize(string sentence)
         {
-            string[] split = inString.Split(delims);
-            List<string> wordList = new List<string>(split);
-            wordList.RemoveAll(remNullStr);
+            string[] tokens = sentence.Split(delims);
+            List<string> wordList = new List<string>(tokens);
+            wordList.RemoveAll(isNullString);
             return wordList;
         }
         
-        //Compare two lists and returns confidence of comaprision
-        static double listMatch(List<string> sentence, List<string> tokens, int wordMatch)
+        //Compare two lists for numwords and returns LD
+        static double listMatch(List<string> sentence, List<string> tokens, int numWords)
         {
-           /* double conf = 1.0;
-            
+            /*
+            double conf = 1.0;
             for (int i=0;i<wordMatch;i++)
             {
                 conf*=LD.Compute(tokens[i],sentence[i]);
                 
             }
-            return conf;*/
-            string sent="";string toks="";
-            for (int i = 0; i < wordMatch; i++)
+            return conf;
+            */
+
+            string temp1 = ""; string temp2="";
+            for (int i = 0; i < numWords; i++)
             {
-                sent = sent + " " + sentence[i];
-                toks = toks + " " + tokens[i];
+                temp1 = temp1 + " " + sentence[i];
+                temp2 = temp2 + " " + tokens[i];
             }
-            return LD.Compute(sent, toks);
+            return LD.Compute(temp1, temp2);
         }
 
 
         //Gives the sorting permutation of a list
-        public static List<int> sortPerm(List<int> inVec)
+        public static List<int> sortingPermutation(List<int> input)
         {
-            int temp, tempPos;
-            List<int> sortedPerm=new List<int>();
-
-            for (int i = 0; i < inVec.Count; i++)
-                sortedPerm.Add(i);
+            List<int> output = new List<int>();
+            for (int i = 0; i < input.Count; i++)
+                output.Add(i);
             
-            int j;
-            for (int i = 0; i < inVec.Count - 1; i++)
-            {
-                temp = inVec[i]; tempPos = i;
-                for (j = i + 1; j < inVec.Count; j++)
-                {
-                    if (inVec[j] < temp)
+            for(int i = 0; i<input.Count; i++)
+                for(int j = i+1; j<input.Count; j++)
+                    if (input[j] < input[i])
                     {
-                        temp = inVec[j];
-                        tempPos = j;
+                        int temp = input[j];
+                        input[i] = input[j];
+                        input[j] = temp;
+
+                        //swap positions in permutation list
+                        temp = output[i];
+                        output[i] = output[j];
+                        output[j] = temp;
                     }
-                }
-                int temp11 = inVec[i];
-                inVec[i] = inVec[tempPos];
-                inVec[tempPos] = temp11;
-
-                temp11 = sortedPerm[i];
-                sortedPerm[i] = sortedPerm[tempPos];
-                sortedPerm[tempPos] = temp11;
-            }
-
-            return sortedPerm;
+            return output;
         }
 
-        //Returns positions of numbers in the sentence
-        static List<int> numberPos(List<string> subStr, List<int> numsInQues)
+        //Returns numbers in the sentence along with their positions
+        static void findNumbersAndPositions(List<string> tokenizedSentence, out List<string> numbersInQues, out List<int> positions)
         {
-	        List<int> positions=new List<int>();
-            int temp = 0;
-            for (int i = 0; i < subStr.Count; i++)
+            numbersInQues = new List<string>();
+	        positions=new List<int>();
+            int temp;
+            int counter = 0;
+            for (int i = 0; i < tokenizedSentence.Count; i++)
             {
-                if (int.TryParse(subStr[i], out temp))
+                if (int.TryParse(tokenizedSentence[i], out temp))
                 {
-                    positions.Add(i);
-                    numsInQues.Add(temp);
+                    counter++;
+                    positions.Add(i);       //number concatenated with something to distinguish multiple occurances
+                    numbersInQues.Add(temp.ToString()+"#"+counter.ToString());
                 }
             }
-	        return positions;
+            return;
         }
 
         //Returns the numeric predicates sorted in order of distance from the given number
-        static List<int> distOrder(int pos, List<int> numPreds)
+        static List<int> closestPredicateToNumber(int numberPosition, List<int> predicatePositions)
         {
 	        List<int> distances=new List<int>();
-            for(int i=0;i<numPreds.Count;i++)
+            for(int i=0;i<predicatePositions.Count;i++)
             {
-                distances.Add(Math.Abs(pos-numPreds[i]));
+                distances.Add(Math.Abs(numberPosition-predicatePositions[i]));
             }
-            List<int> sortedDist = sortPerm(distances);
-            return sortedDist;   
+            return sortingPermutation(distances);
         }
 
         //Find tokens in the question and return the token dictionary
-        static Dictionary<string,Pos_Conf> tokenFind(List<string> sentence)
+        static Dictionary<string, Position_Confidence> findTokens(List<string> sentence)
         {
-            int flag,minLength;
-            List<string> token;
-            int startPos = 0;
-            Dictionary<string,Pos_Conf> predicates = new Dictionary<string,Pos_Conf>();
+            int flag, minLength;
+            List<string> tokens;
+            int startPosition = 0;
+            Dictionary<string,Position_Confidence> predicates = new Dictionary<string,Position_Confidence>();
             while (sentence.Count != 0)
             {
                 
                 flag = 0; minLength = int.MaxValue;
-                double maxConf = 0; string maxPred=""; int maxPos=0;
+                double maxConfidence = 0; string maxPredicate=""; int maxPosition=0;
                 foreach (KeyValuePair<string, string> pair in Tokens.tokenList)
                 {
-                    token = tokenize(pair.Key);
-                    if (sentence.Count < token.Count)
+                    tokens = tokenize(pair.Key);
+                    if (sentence.Count < tokens.Count)
                         continue;
-                    double conf = listMatch(sentence, token, token.Count);
+                    double conf = listMatch(sentence, tokens, tokens.Count);
                     
-                    if (conf > threshold)
+                    if (conf > tokenMatch_threshold)
                     {
-                        if (maxConf < conf)
+                        if (maxConfidence < conf)
                         {
-                            maxConf = conf;
-                            maxPos = startPos;
-                            maxPred = pair.Value;
+                            maxConfidence = conf;
+                            maxPosition = startPosition;
+                            maxPredicate = pair.Value;
                         }
-                        
-                        
+
                         flag = 1;
-                        if (minLength > token.Count)
-                            minLength = token.Count;
+                        if (minLength > tokens.Count)
+                            minLength = tokens.Count;
                     }
                 }
+
                 if (flag == 0)
                 {
                     sentence.RemoveAt(0);
-                    startPos += 1;
+                    startPosition += 1;
                 }
                 else
                 {
-                    if (predicates.ContainsKey(maxPred))
+                    if (predicates.ContainsKey(maxPredicate))
                     {
-                        predicates[maxPred].update(maxConf, maxPos);
+                        predicates[maxPredicate].add(maxConfidence, maxPosition);
                     }
                     else
                     {
-                        Pos_Conf temp = new Pos_Conf(maxConf, maxPos);
-                        predicates.Add(maxPred, temp);
+                        Position_Confidence temp = new Position_Confidence(maxConfidence, maxPosition);
+                        predicates.Add(maxPredicate, temp);
                     }
                     sentence.RemoveRange(0, minLength);
-                    startPos += minLength;
+                    startPosition += minLength;
                 }
             }
             return predicates;
         }
 
-        //Find all numbers in the question
-        static Dictionary<int,List<string>> numFind(List<string> sentence, List<int> predsPos, List<string> predsOrder)
+        /*
+        //For each number in question, sort all numeric predicates in decreasing oreder of likelihood based on closeness with the number
+        static Dictionary<int,List<string>> mostLikelyNumericPredicate(List<string> sentence, List<int> predicatePositions, List<string> predicates)
         {
-            List<int> numsInQues = new List<int>();
-            List<int> numPos = numberPos(sentence, numsInQues);
-            Dictionary<int, List<string>> numOrder = new Dictionary<int, List<string>>();
-            for (int i = 0; i < numPos.Count; i++)
+            List<int> numInQuestion = new List<int>();
+            List<int> numPositions;
+            findNumbersAndPositions(sentence, numInQuestion, out numPositions);
+            Dictionary<int, List<string>> output = new Dictionary<int, List<string>>();
+            for (int i = 0; i < numPositions.Count; i++)
             {
-                List<int> temp = distOrder(numPos[i], predsPos);
-                List<string> sortedOrder = new List<string>();
+                List<int> temp = closestPredicateToNumber(numPositions[i], predicatePositions);
+                List<string> sortedOrderOfPredicates = new List<string>();
                 for (int j = 0; j < temp.Count; j++)
-                    sortedOrder.Add(predsOrder[temp[j]]);
-                numOrder.Add(numsInQues[i], sortedOrder);
+                    sortedOrderOfPredicates.Add(predicates[temp[j]]);
+                output.Add(numInQuestion[i], sortedOrderOfPredicates);
             }
-            return numOrder;
+            return output;
         }
+         */
 
         //Helper DFS function - Currently not used
         public static Node findNextHole(Node root)
@@ -261,7 +257,11 @@ namespace Chemistry_Studio
                         }
                     }
                     ParseTree newAndTree = (ParseTree)andToken.Clone();
+                    //UPDATE FOR PERMUTATION CHECK
+                    Node hole = newAndTree.holeList[0];
                     newAndTree.holeList[0].holeFill(newTree);
+                    if (hole.checkForPermutation() == false) return; // this tree is going to generate permutation, discard it
+
                     newAndTree.confidence = 0.9 * newTree.confidence;
                     typeSafe(unusedTokens, (ParseTree)newAndTree.Clone(), allTokens);
                 }
@@ -276,12 +276,18 @@ namespace Chemistry_Studio
                     {
                         List<ParseTree> newTokens = new List<ParseTree>();
                         ParseTree newTree = (ParseTree)tree.Clone();
+
+                        //UPDATE FOR PERMUTATION CHECK
+                        Node hole = newTree.holeList[0];
                         newTree.holeList[0].holeFill(tok);
+                        if (hole.checkForPermutation() == false) continue; // this tree is going to generate permutation, discard it
+
                         newTree.confidence *= 0.9;
                         typeSafe(newTokens, (ParseTree)newTree.Clone(), allTokens);
                     }
                 }
             }
+
             if(unusedTokens.Count() != 0 && tree.holeList.Count!=0)
             {
                 //there are unused tokens and holes to be filled
@@ -301,7 +307,12 @@ namespace Chemistry_Studio
                         newTokens.RemoveAt(counter);
 
                         ParseTree newTree = (ParseTree)tree.Clone();
+
+                        //UPDATE FOR PERMUTATION CHECK
+                        Node hole = newTree.holeList[0];
                         newTree.holeList[0].holeFill(tok);
+                        if (hole.checkForPermutation() == false) continue; // this tree is going to generate permutation, discard it
+
                         typeSafe(newTokens, (ParseTree)newTree.Clone(), allTokens);
                     }
                 }
@@ -314,7 +325,12 @@ namespace Chemistry_Studio
                         {
                             List<ParseTree> newTokens = unusedTokens.Select(i => (ParseTree)i.Clone()).ToList();
                             ParseTree newTree = (ParseTree)tree.Clone();
+
+                            //UPDATE FOR PERMUTATION CHECK
+                            Node hole = newTree.holeList[0];
                             newTree.holeList[0].holeFill(tok);
+                            if (hole.checkForPermutation() == false) continue; // this tree is going to generate permutation, discard it
+
                             newTree.confidence *= 0.9;
                             typeSafe(newTokens, (ParseTree)newTree.Clone(), allTokens);
                         }
@@ -324,90 +340,105 @@ namespace Chemistry_Studio
         }
 
         //Helper function to display all tokens
-        static void viewTokens(Dictionary<string, Pos_Conf> tokensConf)
+        static void viewTokens(Dictionary<string, Position_Confidence> tokens)
         {
-            Console.WriteLine("Displaying all tokens");
-            foreach (KeyValuePair<string, Pos_Conf> temp in tokensConf)
+            Console.WriteLine("Displaying all tokens : Token \t Confidence \t Position");
+            foreach (KeyValuePair<string, Position_Confidence> temp in tokens)
             {
-                for (int i = 0; i < temp.Value.conf.Count; i++)
-                    Console.WriteLine(temp.Key + "\t" + temp.Value.conf[i] + "\t" + temp.Value.positions[i]);
+                for (int i = 0; i < temp.Value.confidences.Count; i++)
+                    Console.WriteLine(temp.Key + "\t" + temp.Value.confidences[i] + "\t" + temp.Value.positions[i]);
             }
         }
 
-        static void viewNumbers(Dictionary<int, List<string>> nums)
+        static void viewNumbers(Dictionary<int, List<string>> numbers)
         {
-            foreach (KeyValuePair<int, List<string>> numConfs in nums)
+            foreach (KeyValuePair<int, List<string>> num in numbers)
             {
-                Console.Write("{0}\t", numConfs.Key);
-                foreach (string pred in numConfs.Value)
+                Console.Write("{0}\t", num.Key);
+                foreach (string temp in num.Value)
                 {
-                    if (pred.IndexOf("NA") == -1)
-                        Console.Write("{0} ", pred);
+                    if (temp.IndexOf("NA") == -1)
+                        Console.Write("{0} ", temp);
                 }
                 Console.WriteLine();
             }
         }
 
-        //Prepare datastructures and find numbers with association with numeric predicates
-        static Dictionary<int, List<string>> numberFind(Dictionary<string,Pos_Conf> tokensConf, List<string> numericPreds, List<string> splitWords)
+        //For each number in question, sort all numeric predicates in decreasing oreder of likelihood based on closeness with the number
+        static Dictionary<string, List<string>> mostLikelyNumericPredicate(Dictionary<string, Position_Confidence> tokenList,
+            List<string> splitWords)
         {
-            List<string> predsOrder = new List<string>();
-            List<int> predsPos = new List<int>();
+            List<string> predicates = new List<string>();
+            List<int> predicatePositions = new List<int>();
 
-            for (int i = 0; i < numericPreds.Count; i++)
+            for (int i = 0; i < Tokens.numericPredicates.Count; i++)
             {
-                if (tokensConf.ContainsKey(numericPreds[i]))
+                if (tokenList.ContainsKey(Tokens.numericPredicates[i]))
                 {
-                    for (int j = 0; j < tokensConf[numericPreds[i]].positions.Count; j++)
+                    for (int j = 0; j < tokenList[Tokens.numericPredicates[i]].positions.Count; j++)
                     {
-                        predsOrder.Add(numericPreds[i] + "#" + j);
-                        predsPos.Add(tokensConf[numericPreds[i]].positions[j]);
+                        predicates.Add(Tokens.numericPredicates[i] + "#" + j);
+                        predicatePositions.Add(tokenList[Tokens.numericPredicates[i]].positions[j]);
                     }
                 }
                 else
                 {
-                    predsOrder.Add(numericPreds[i] + "#NA");
-                    predsPos.Add(-1);
+                    predicates.Add(Tokens.numericPredicates[i] + "#NA");
+                    predicatePositions.Add(-1);
                 }
             }
-            return numFind(splitWords, predsPos, predsOrder);
+
+            List<string> numInQuestion;
+            List<int> numPositions;
+            findNumbersAndPositions(splitWords, out numInQuestion, out numPositions);
+            Dictionary<string, List<string>> output = new Dictionary<string, List<string>>();
+            for (int i = 0; i < numPositions.Count; i++)
+            {
+                List<int> temp = closestPredicateToNumber(numPositions[i], predicatePositions);
+                List<string> sortedOrderOfPredicates = new List<string>();
+                for (int j = 0; j < temp.Count; j++)
+                    sortedOrderOfPredicates.Add(predicates[temp[j]]);
+                output.Add(numInQuestion[i], sortedOrderOfPredicates);
+            }
+            return output;
         }
 
-        //Add all non-numeric tokens to token list
-        static void addSimpleTokens(Dictionary<string,Pos_Conf> tokensConf, List<string> numericPreds, List<ParseTree> tokenTrees)
+        //Add all non-numeric simpler tokens to tokentree list
+        static void addSimpleTokens(Dictionary<string,Position_Confidence> tokenList, ref List<ParseTree> tokenTrees)
         {
-            foreach (KeyValuePair<string, Pos_Conf> tokenStructs in tokensConf)
+            foreach (KeyValuePair<string, Position_Confidence> tokenStruct in tokenList)
             {
-                if (numericPreds.Contains(tokenStructs.Key))
+                // not adding numeric predicates right now
+                if (Tokens.numericPredicates.Contains(tokenStruct.Key))
                     continue;
-                for (int i = 0; i < tokenStructs.Value.positions.Count; i++)
+                for (int i = 0; i < tokenStruct.Value.positions.Count; i++)
                 {
                     ParseTree temp = new ParseTree(new Node());
                     temp.root.isHole = false;
-                    temp.root.data = tokenStructs.Key;
-                    temp.root.outputType = Tokens.outputTypePredicates[tokenStructs.Key];
-                    //Set output type
+                    temp.root.data = tokenStruct.Key;
+                    temp.root.outputType = Tokens.outputTypePredicates[tokenStruct.Key]; 
                     temp.root.children = new List<Node>();
 
-                    List<string> param = Tokens.inputTypePredicates[tokenStructs.Key];
+                    List<string> param = Tokens.inputTypePredicates[tokenStruct.Key];
                     if (param[0] != "null")
                     {
                         foreach (string x in param)
                         {
-                            Node tempNode = new Node();     //check that it appends to end of list
+                            Node tempNode = new Node(temp.root);
                             temp.root.children.Add(tempNode);
                             tempNode.outputType = x;
                         }
                     }
-                    tokenTrees.Add((ParseTree)temp.Clone());
+                    tokenTrees.Add((ParseTree)temp.Clone());  //cloning adjusts the holelist of the parsetree
                 }
             }
         }
 
-        static void addCompoundTokens(Dictionary<int, List<string>> nums, Dictionary<string,Pos_Conf> tokensConf, List<ParseTree> tokenTrees)
+        static void handleNumbers(Dictionary<string, List<string>> numbersToPredictesMatchingList,
+            Dictionary<string, Position_Confidence> tokenList, ref List<ParseTree> tokenTrees)
         {
             //Add numeric tokens as Same(NumericPred(...),number)
-            foreach (KeyValuePair<int, List<string>> numConfs in nums)
+            foreach (KeyValuePair<string, List<string>> numToPred in numbersToPredictesMatchingList)
             {
                 ParseTree temp = new ParseTree(new Node());
                 temp.root.isHole = false;
@@ -419,70 +450,69 @@ namespace Chemistry_Studio
                 {
                     foreach (string x in param)
                     {
-                        Node tempNode = new Node();     //check that it appends to end of list
+                        Node tempNode = new Node(temp.root);     //check that it appends to end of list
                         temp.root.children.Add(tempNode);
                         tempNode.outputType = x;
                     }
                 }
                 //Assume that a number always has a numeric predicate associated with it!
-                temp.root.children[0].data = numConfs.Value[0].Split('#')[0];
-                temp.root.children[0].isHole = false;
-                temp.root.children[0].children = new List<Node>();
+                //numer is put to left child for lexical ordering business in remooving permutations
+                temp.root.children[1].data = numToPred.Value[0].Split('#')[0];
+                temp.root.children[1].isHole = false;
+                temp.root.children[1].children = new List<Node>();
 
-                param = Tokens.inputTypePredicates[temp.root.children[0].data];
+                param = Tokens.inputTypePredicates[temp.root.children[1].data];
                 if (param[0] != "null")
                 {
                     foreach (string x in param)
                     {
-                        Node tempNode = new Node();     //check that it appends to end of list
-                        temp.root.children[0].children.Add(tempNode);
+                        Node tempNode = new Node(temp.root.children[1]);
+                        temp.root.children[1].children.Add(tempNode);
                         tempNode.outputType = x;
                     }
                 }
-                int result;
-                int.TryParse(numConfs.Value[0].Split('#')[1], out result);
-                tokensConf[numConfs.Value[0].Split('#')[0]].conf[result] = 0;
 
-                temp.root.children[1].data = numConfs.Key.ToString();
-                temp.root.children[1].isHole = false;
+                int result;
+                int.TryParse(numToPred.Value[0].Split('#')[1], out result);
+                tokenList[numToPred.Value[0].Split('#')[0]].confidences[result] = 0;
+
+                temp.root.children[0].data = numToPred.Key.Split('#')[0];
+                temp.root.children[0].isHole = false;
                 tokenTrees.Add((ParseTree)temp.Clone());
             }
         }
+
         public static void Main(string[] args)
         {
             Tokens.initialize();
             Tokens.initializePredSpec();
-            List<string> numericPreds = new List<string>(new string[] { "IE", "Group", "Period", "AtomicNumber", "OxidationState" });
-            //string sentence = "Which element has the highest ionisation energy ?";
-            //string sentence = "Which of the following elements has the smallest atomic radius";
-            //string sentence = "Which element between group 3 and group 5 ";
-            //string sentence = "Which element has the maximum affinity to electron ?";
-            //string sentence = "Which element is in Group 2 and period 3";
-
+            
+            
             string sentence = "";
             foreach (string str in args)
                 sentence += " " + str;
             sentence = sentence.ToLower();
+            
             List<string> splitWords = tokenize(sentence);
-            List<string> splitWordsNum = tokenize(sentence);
-            Dictionary<string,Pos_Conf> tokensConf = tokenFind(splitWords);
-            Dictionary<int, List<string>> nums = numberFind(tokensConf, numericPreds, splitWordsNum);
+            List<string> splitWordsNumbers = tokenize(sentence);
+            
+            Dictionary<string,Position_Confidence> tokenList = findTokens(splitWords);
+            Dictionary<string, List<string>> numbersToPredictesMatchingList = mostLikelyNumericPredicate(tokenList, splitWordsNumbers);
             
             List<ParseTree> tokenTrees = new List<ParseTree>();
 
-            addSimpleTokens(tokensConf, numericPreds, tokenTrees);
-            addCompoundTokens(nums, tokensConf, tokenTrees);
+            addSimpleTokens(tokenList, ref tokenTrees);
+            handleNumbers(numbersToPredictesMatchingList, tokenList, ref tokenTrees);
 
-            
             //Add all the remaining numeric predicates to the token list
-            foreach (string pred in numericPreds)
+            foreach (string pred in Tokens.numericPredicates)
             {
                 ParseTree temp = new ParseTree(new Node());
-                if (tokensConf.ContainsKey(pred))
+                if (tokenList.ContainsKey(pred))
                 {
-                    for (int i = 0; i < tokensConf[pred].positions.Count; i++)
+                    for (int i = 0; i < tokenList[pred].positions.Count; i++)
                     {
-                        if (tokensConf[pred].conf[i] == 0)
+                        if (tokenList[pred].confidences[i] == 0)
                             continue;
 
 
@@ -497,19 +527,18 @@ namespace Chemistry_Studio
                         {
                             foreach (string x in param)
                             {
-                                Node tempNode = new Node();     //check that it appends to end of list
+                                Node tempNode = new Node(temp.root);     //check that it appends to end of list
                                 temp.root.children.Add(tempNode);
                                 tempNode.outputType = x;
                             }
                         }
                         tokenTrees.Add((ParseTree)temp.Clone());
-                        //Console.WriteLine(temp.ToString());
                     }
                 }
                     
             }
 
-            //Add "And" to allTokens   
+            //Add "And" to allTokens explicitly
             /*if (!tokensConf.ContainsKey("And"))
             {
                 ParseTree andToken = new ParseTree(new Node());
@@ -533,9 +562,8 @@ namespace Chemistry_Studio
             }*/
 
             ParseTree tree = new ParseTree(new Node());
-            try
+            //try
             {
-                
                 typeSafe(tokenTrees, (ParseTree)tree.Clone(), tokenTrees);
                 string output = "";
                 completeTrees.Sort();
@@ -546,12 +574,13 @@ namespace Chemistry_Studio
                 }
 
                 Console.WriteLine(output);
+                //Console.WriteLine(completeTrees[0].XMLForm());
             }
-            catch(Exception e)
+           /* catch(Exception e)
             {
                 Console.WriteLine("Program Crashed! with message : " + e.ToString());
-            }
-            //Console.ReadLine();
+            }*/
+            Console.ReadLine();
             
         }
     }

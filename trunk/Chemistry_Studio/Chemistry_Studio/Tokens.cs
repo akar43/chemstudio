@@ -7,8 +7,13 @@ namespace Chemistry_Studio
 {
     public static class Tokens
     {
+        public static string[] variableTokens = { "x", "y", "z" };
+
         public static Dictionary<string, List<string>> inputTypePredicates;
         public static Dictionary<string, string> outputTypePredicates;
+
+        public static List<string> numericPredicates = new List<string>(new string[] { "IE", "Group", "Period", "AtomicNumber", "OxidationState" });
+
         public static string[] outputTypeList = {
             "Max#bool", "Min#bool", "Same#bool", "Period#num", "Group#num", "AtomicNumber#num", "OxidationState#num", "IonicRadius#num",
             "AtomicRadius#num", "IE#num", "Metallic#num", "Electronegativity#num", "ElectronAffinity#num", "Conductance#num", "Halogen#bool",
