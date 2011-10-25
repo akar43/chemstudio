@@ -31,6 +31,7 @@ namespace Chemistry_Studio
         static List<ParseTree> completeTrees=new List<ParseTree>();
         static Char[] delims = {' ',',',':','?','.','-'};
         static double tokenMatch_threshold = 0.75;
+        static double tree_rejection_threshold = 0.5;
         
         //Predicate to remove all null strings detected during the parse
         private static bool isNullString(String s)
@@ -135,8 +136,10 @@ namespace Chemistry_Studio
             {
                 
                 flag = 0; minLength = int.MaxValue;
-                double maxConfidence = 0; string maxPredicate=""; int maxPosition=0;
-                foreach (KeyValuePair<string, string> pair in Tokens.tokenList)
+                double maxConfidence = 0;
+                List<string> maxPredicate = new List<string>();
+                int maxPosition=0;
+                foreach (KeyValuePair<string, List<string>> pair in Tokens.tokenList)
                 {
                     tokens = tokenize(pair.Key);
                     if (sentence.Count < tokens.Count)
@@ -157,7 +160,6 @@ namespace Chemistry_Studio
                             minLength = tokens.Count;
                     }
                 }
-
                 if (flag == 0)
                 {
                     sentence.RemoveAt(0);
@@ -165,14 +167,17 @@ namespace Chemistry_Studio
                 }
                 else
                 {
-                    if (predicates.ContainsKey(maxPredicate))
+                    foreach (string pred in maxPredicate)
                     {
-                        predicates[maxPredicate].add(maxConfidence, maxPosition);
-                    }
-                    else
-                    {
-                        Position_Confidence temp = new Position_Confidence(maxConfidence, maxPosition);
-                        predicates.Add(maxPredicate, temp);
+                        if (predicates.ContainsKey(pred))
+                        {
+                            predicates[pred].add(maxConfidence, maxPosition);
+                        }
+                        else
+                        {
+                            Position_Confidence temp = new Position_Confidence(maxConfidence, maxPosition);
+                            predicates.Add(pred, temp);
+                        }
                     }
                     sentence.RemoveRange(0, minLength);
                     startPosition += minLength;
@@ -216,10 +221,19 @@ namespace Chemistry_Studio
             }
         }
 
+        static bool canFill(string type1, string targetType)
+        {
+            if (type1 == targetType) return true;
+            //list of type hierarchy
+            if (type1 == "elem" && targetType == "domain") return true;
+            if (type1 == "bool" && targetType == "domain") return true;
+            else return false;
+        }
+
         //Fit the tokens in a typesafe manner
         public static void typeSafe(List<ParseTree> unusedTokens, ParseTree tree, List<ParseTree> allTokens)
         {
-            if (tree.confidence < 0.5) return;
+            if (tree.confidence < tree_rejection_threshold) return;
             if (tree.holeList.Count == 0)
             {
                 //No holes
@@ -227,9 +241,9 @@ namespace Chemistry_Studio
 
                 //Reduce confidence by proportion of unused tokens
                 tree.confidence *= (1 - (float)unusedTokens.Count / allTokens.Count);
-                if (tree.confidence >= 0.5)
+                if (tree.confidence >= tree_rejection_threshold)
                 {
-                    tree.standardForm();
+                    //tree.standardForm();
                     bool flag = false;
                     foreach (ParseTree t in completeTrees)
                         flag = flag || t.isEqual(tree);
@@ -272,7 +286,7 @@ namespace Chemistry_Studio
                 //tokens finished but there are holes
                 foreach (ParseTree tok in allTokens)
                 {
-                    if (tok.root.outputType == tree.holeList[0].outputType)
+                    if (canFill(tok.root.outputType, tree.holeList[0].outputType))
                     {
                         List<ParseTree> newTokens = new List<ParseTree>();
                         ParseTree newTree = (ParseTree)tree.Clone();
@@ -298,7 +312,7 @@ namespace Chemistry_Studio
                 {
                     counter++;
                     //Console.WriteLine("{0}\t{1}", Tokens.outputTypePredicates[tok], tree.holeList[0].outputType);
-                    if (tok.root.outputType == tree.holeList[0].outputType)
+                    if (canFill(tok.root.outputType, tree.holeList[0].outputType))
                     {
                         flag = true;
                         List<ParseTree> newTokens = unusedTokens.Select(i => (ParseTree)i.Clone()).ToList();
@@ -321,7 +335,7 @@ namespace Chemistry_Studio
                     //none of the unused tokens can fill a hole - need to repeat some used token ?
                     foreach (ParseTree tok in allTokens)
                     {
-                        if (tok.root.outputType == tree.holeList[0].outputType)
+                        if (canFill(tok.root.outputType, tree.holeList[0].outputType))
                         {
                             List<ParseTree> newTokens = unusedTokens.Select(i => (ParseTree)i.Clone()).ToList();
                             ParseTree newTree = (ParseTree)tree.Clone();
@@ -408,11 +422,15 @@ namespace Chemistry_Studio
         {
             foreach (KeyValuePair<string, Position_Confidence> tokenStruct in tokenList)
             {
+                /*
                 // not adding numeric predicates right now
                 if (Tokens.numericPredicates.Contains(tokenStruct.Key))
                     continue;
+                 */
                 for (int i = 0; i < tokenStruct.Value.positions.Count; i++)
                 {
+                    if (tokenStruct.Value.confidences[i] < tokenMatch_threshold) continue;
+
                     ParseTree temp = new ParseTree(new Node());
                     temp.root.isHole = false;
                     temp.root.data = tokenStruct.Key;
@@ -482,6 +500,20 @@ namespace Chemistry_Studio
             }
         }
 
+        static void addCoupledTokens(ref Dictionary<string, Position_Confidence> tokenList)
+        {
+            foreach (KeyValuePair<string, Position_Confidence> temp in tokenList)
+            {
+                //Ad hoc code for adding Trend predicate on finding a movement type token
+                if (Tokens.outputTypePredicates[temp.Key] == "movement")
+                {
+                    tokenList.Add("Trend", new Position_Confidence(temp.Value.confidences[0], temp.Value.positions[0]));
+                    return; //adding only one trend predicaate
+                }
+            }
+            return;
+        }
+
         public static void Main(string[] args)
         {
             Tokens.initialize();
@@ -497,13 +529,21 @@ namespace Chemistry_Studio
             List<string> splitWordsNumbers = tokenize(sentence);
             
             Dictionary<string,Position_Confidence> tokenList = findTokens(splitWords);
+            addCoupledTokens(ref tokenList);
             Dictionary<string, List<string>> numbersToPredictesMatchingList = mostLikelyNumericPredicate(tokenList, splitWordsNumbers);
             
             List<ParseTree> tokenTrees = new List<ParseTree>();
 
-            addSimpleTokens(tokenList, ref tokenTrees);
             handleNumbers(numbersToPredictesMatchingList, tokenList, ref tokenTrees);
+            addSimpleTokens(tokenList, ref tokenTrees);
 
+            /*viewTokens(tokenList);
+            foreach (ParseTree t in tokenTrees)
+            {
+                Console.WriteLine(t.ToString());
+            }*/
+
+            /*
             //Add all the remaining numeric predicates to the token list
             foreach (string pred in Tokens.numericPredicates)
             {
@@ -514,7 +554,6 @@ namespace Chemistry_Studio
                     {
                         if (tokenList[pred].confidences[i] == 0)
                             continue;
-
 
                         temp.root.isHole = false;
                         temp.root.data = pred;
@@ -534,9 +573,9 @@ namespace Chemistry_Studio
                         }
                         tokenTrees.Add((ParseTree)temp.Clone());
                     }
-                }
-                    
+                }       
             }
+            */
 
             //Add "And" to allTokens explicitly
             /*if (!tokensConf.ContainsKey("And"))

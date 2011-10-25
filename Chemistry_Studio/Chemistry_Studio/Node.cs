@@ -58,10 +58,11 @@ namespace Chemistry_Studio
             return output;
         }
 
+        /*
         public void standardForm()
         {
             this.root.standardForm();
-        }
+        }*/
 
         public bool isEqual(ParseTree otherTree)
         {
@@ -224,6 +225,7 @@ namespace Chemistry_Studio
             else return true;
         }
 
+        /*
         // to be called by root of a parsetree only
         public void standardForm()
         {
@@ -270,6 +272,7 @@ namespace Chemistry_Studio
             foreach(Node t in this.children)
                 t.standardForm();
         }
+        */
 
         //to be called only by parseTree
         public bool isEqual(Node other)

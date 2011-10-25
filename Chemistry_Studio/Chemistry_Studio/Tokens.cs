@@ -15,9 +15,20 @@ namespace Chemistry_Studio
         public static List<string> numericPredicates = new List<string>(new string[] { "IE", "Group", "Period", "AtomicNumber", "OxidationState" });
 
         public static string[] outputTypeList = {
-            "Max#bool", "Min#bool", "Same#bool", "Period#num", "Group#num", "AtomicNumber#num", "OxidationState#num", "IonicRadius#num",
-            "AtomicRadius#num", "IE#num", "Metallic#num", "Electronegativity#num", "ElectronAffinity#num", "Conductance#num", "Halogen#bool",
-            "GasAtSTP#bool", "LiquidAtSTP#bool", "Metalloid#bool", "NobleGas#bool", "AlkaliMetal#bool", "AlkalineEarthMetal#bool",
+            "Increase#change", "Decrease#change", "Stays_Same#change", "Non_Increase#change", "Non_Decrease#change", "Left#movement",
+            "Right#movement", "Up#movement", "Down#movement", "Left_Up#movement", "Left_Down#movement", "Right_Up#movement",
+            "Right_Down#movement", "Trend#bool", 
+            
+            "Max#bool", "Min#bool", "Same#bool", "Period#num", "Group#num", 
+            
+            "AtomicNumber#num", "OxidationState#num", "IonicRadius#num",
+            "AtomicRadius#num", "IE#num", "Metallic#num", "Electronegativity#num", "ElectronAffinity#num", "Conductance#num",
+            
+            "AtomicNumberProperty#numericFunc", "OxidationStateProperty#numericFunc", "IonicRadiusProperty#numericFunc",
+            "AtomicRadiusProperty#numericFunc", "IEProperty#numericFunc", "MetallicProperty#numericFunc", "ElectronegativityProperty#numericFunc",
+            "ElectronAffinityProperty#numericFunc", "ConductanceProperty#numericFunc",
+            
+            "Halogen#bool", "GasAtSTP#bool", "LiquidAtSTP#bool", "Metalloid#bool", "NobleGas#bool", "AlkaliMetal#bool", "AlkalineEarthMetal#bool",
             "RareEarthElement#bool", "IonicBond#bool", "CovalentBond#bool", "And#bool", "Or#bool", "x#elem", "z#elem", "H#elem", "He#elem",
             "Li#elem", "Be#elem", "B#elem", "C#elem", "N#elem", "O#elem", "F#elem", "Ne#elem", "Na#elem", "Mg#elem", "Al#elem", "Si#elem",
             "P#elem", "S#elem", "Cl#elem", "K#elem", "Ar#elem", "Ca#elem", "Sc#elem", "Ti#elem", "V#elem", "Cr#elem", "Mn#elem", "Fe#elem",
@@ -31,7 +42,10 @@ namespace Chemistry_Studio
             "Rg#elem", "Uut#elem", "Cn#elem", "Uup#elem", "Uuq#elem", "Uuh#elem", "Uuo#elem", "Uus#elem" };
         //Excluded , "As#elem" and , "In#elem"
 
-        public static string[] inputTypeList = {"H#null","He#null","Li#null","Be#null","B#null","C#null","N#null","O#null","F#null","Ne#null","Na#null","Mg#null",
+        public static string[] inputTypeList = {
+        "Increase#null", "Decrease#null", "Stays_Same#null", "Non_Increase#null", "Non_Decrease#null", "Left#null",
+        "Right#null", "Up#null", "Down#null", "Left_Up#null", "Left_Down#null", "Right_Up#null", "Right_Down#null", 
+        "H#null","He#null","Li#null","Be#null","B#null","C#null","N#null","O#null","F#null","Ne#null","Na#null","Mg#null",
         "Al#null","Si#null","P#null","S#null","Cl#null","K#null","Ar#null","Ca#null","Sc#null","V#null","Cr#null","Mn#null","Fe#null",
         "Ni#null","Co#null","Cu#null","Zn#null","Ga#null","Ge#null","Se#null","Br#null","Kr#null","Rb#null","Sr#null","Y#null",
         "Zr#null","Nb#null","Mo#null","Tc#null","Ru#null","Rh#null","Pd#null","Ag#null","Cd#null","Sn#null","Sb#null","I#null",
@@ -40,10 +54,15 @@ namespace Chemistry_Studio
         "Au#null","Hg#null","Tl#null","Pb#null","Bi#null","Po#null","Rn#null","Fr#null","Ra#null","Ac#null","Pa#null","Th#null",
         "Np#null","U#null","Am#null","Pu#null","Cm#null","Bk#null","Cf#null","Es#null","Fm#null","Md#null","No#null","Rf#null","Lr#null",
         "Db#null","Bh#null","Sg#null","Hs#null","Mt#null","Ds#null","Rg#null","Uut#null","Cn#null","Uup#null","Uuq#null","Uuh#null",
-        "Uuo#null","Uus#null","Max#num","Min#num","IE#elem","Halogen#elem","GasAtSTP#elem","LiquidAtSTP#elem","Metalloid#elem",
+        "Uuo#null","Uus#null","Max#numericFunc#domain","Min#numericFunc#domain","IE#elem","Halogen#elem","GasAtSTP#elem","LiquidAtSTP#elem","Metalloid#elem",
         "NobleGas#elem","AlkaliMetal#elem","AlkalineEarthMetal#elem","RareEarthElement#elem","IonicBond#elem#elem","CovalentBond#elem#elem",
         "AtomicNumber#elem","OxidationState#elem","Electronegativity#elem","ElectronAffinity#elem","Conductance#elem","IonicRadius#elem",
-        "AtomicRadius#elem","Group#elem","Period#elem","Metallic#elem","Same#num#num","And#bool#bool","Or#bool#bool","x#null","z#null"};
+        "AtomicRadius#elem","Group#elem","Period#elem","Metallic#elem","Same#num#num","And#bool#bool","Or#bool#bool","x#null","z#null", 
+
+        "Trend#movement#numericFunc#change", "AtomicNumberProperty#null", "OxidationStateProperty#null", "IonicRadiusProperty#null",
+        "AtomicRadiusProperty#null", "IEProperty#null", "MetallicProperty#null", "ElectronegativityProperty#null",
+        "ElectronAffinityProperty#null", "ConductanceProperty#null"
+        };
 
         //Excluded ,"As#null" "In#null At#null"
         public static void initializePredSpec()
@@ -69,8 +88,9 @@ namespace Chemistry_Studio
             }   
         }
 
-        public static Dictionary<string, string> tokenList;
-        public static string[] tList = {"h#H", "hydrogen#H", "he#He", "helium#He", "li#Li", "lithium#Li", "be#Be", "beryllium#Be", "b#B",
+        public static Dictionary<string, List<string>> tokenList;
+        public static string[] tList = {
+          "h#H", "hydrogen#H", "he#He", "helium#He", "li#Li", "lithium#Li", "be#Be", "beryllium#Be", "b#B",
           "boron#B", "c#C", "carbon#C", "n#N", "nitrogen#N", "o#O", "oxygen#O", "f#F", "fluorine#F", "ne#Ne", "neon#Ne", "na#Na", "sodium#Na", "mg#Mg",
           "magnesium#Mg", "al#Al", "aluminium#Al", "si#Si", "silicon#Si", "p#P", "phosphorus#P", "s#S", "sulfur#S", "cl#Cl", "chlorine#Cl",
           "k#K", "potassium#K", "ar#Ar", "argon#Ar", "ca#Ca", "calcium#Ca", "sc#Sc", "scandium#Sc", "ti#Ti", "titanium#Ti", "v#V", "vanadium#V",
@@ -96,19 +116,36 @@ namespace Chemistry_Studio
           "lanthanide#RareEarthElement", "actinide#RareEarthElement", "gas at stp#GasAtSTP", "liquid at stp#LiquidAtSTP", "ionic bond#IonicBond",
           "covalent#CovalentBond", "spin paired#SpinPaired", "atomic radius#AtomicRadius", "atomic size#AtomicRadius", "ionic radius#IonicRadius",
           "ionic size#IonicRadius", "maximum#Max", "greatest#Max", "most#Max", "highest#Max", "strongest#Max", "best#Max", "smallest#Min",
-          "least#Min", "minimum#Min", "lowest#Min", "weakest#Min", "worst#Min", "electronegativity#Electronegativity", "metallic#Metallic",
-          "increase#Increase", "decrease#Decrease", "electron affinity#ElectronAffinity", "conductor#Conductance", "quantum number#QuantumNumber",
-          "color#Color", "orbital#Orbitals", "family#Family", "oxidation state#OxidationState", "oxidation number#OxidationState",
-          "ionization energy#IE", "atomic number#AtomicNumber", "group#Group", "period#Period", "element#x", "same#Same", "and#And", "or#Or" };
-
+          "least#Min", "minimum#Min", "lowest#Min", "weakest#Min", "worst#Min", "quantum number#QuantumNumber",
+          "color#Color", "orbital#Orbitals", "family#Family", "electronegativity#Electronegativity", "metallic#Metallic",
+          "electron affinity#ElectronAffinity", "conductor#Conductance", "oxidation state#OxidationState", "oxidation number#OxidationState",
+          "ionization energy#IE", "atomic number#AtomicNumber", "group#Group", "period#Period", "element#x", "same#Same", "and#And", "or#Or", 
+           "increase#Increase", "decrease#Decrease", "stays same#Stays_Same", "unchanged#Stays_Same", "not increase#Non_Increase",
+           "not decrease#Non_Decrease", "left#Left", "right#Right", "up#Up", "down#Down", "top to bottom#Down", 
+           "electronegativity#ElectronegativityProperty", "metallic#MetallicProperty", "electron affinity#ElectronAffinity",
+           "conductor#ConductanceProperty", "oxidation state#OxidationStateProperty", "oxidation number#OxidationStateProperty",
+          "ionization energy#IEProperty", "atomic number#AtomicNumberProperty", "atomic radius#AtomicRadiusProperty",
+          "atomic size#AtomicRadiusProperty", "ionic radius#IonicRadiusProperty", "ionic size#IonicRadiusProperty"
+            };
+         //"left up#Left_Up", "up left#Left_Up", "left down#Left_Down",
+           //"down left#Left_Down", "right up#Right_Up", "up right#Right_Up", "right down#Right_Down",  "down right#Right_Down", 
         //Excluded , "in#In"  "as#As" "at#At"
         public static void initialize()
         {
-            tokenList = new Dictionary<string, string>();
+            tokenList = new Dictionary<string, List<string>>();
             foreach (string str in tList)
             {
                 string[] temp = str.Split('#');
-                tokenList.Add(temp[0], temp[1]);
+                if (tokenList.ContainsKey(temp[0]))
+                {
+                    tokenList[temp[0]].Add(temp[1]);
+                }
+                else
+                {
+                    List<string> t = new List<string>();
+                    t.Add(temp[1]);
+                    tokenList.Add(temp[0], t);
+                }
             }   
         }
     }
