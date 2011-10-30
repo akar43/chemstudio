@@ -339,7 +339,7 @@ namespace Chemistry_Studio
                         {
                             List<ParseTree> newTokens = unusedTokens.Select(i => (ParseTree)i.Clone()).ToList();
                             ParseTree newTree = (ParseTree)tree.Clone();
-
+                            
                             //UPDATE FOR PERMUTATION CHECK
                             Node hole = newTree.holeList[0];
                             newTree.holeList[0].holeFill(tok);
@@ -601,7 +601,7 @@ namespace Chemistry_Studio
             }*/
 
             ParseTree tree = new ParseTree(new Node());
-            //try
+            try
             {
                 typeSafe(tokenTrees, (ParseTree)tree.Clone(), tokenTrees);
                 string output = "";
@@ -615,11 +615,11 @@ namespace Chemistry_Studio
                 Console.WriteLine(output);
                 //Console.WriteLine(completeTrees[0].XMLForm());
             }
-           /* catch(Exception e)
+            catch(Exception e)
             {
                 Console.WriteLine("Program Crashed! with message : " + e.ToString());
-            }*/
-            Console.ReadLine();
+            }
+            //Console.ReadLine();
             
         }
     }
