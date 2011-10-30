@@ -54,7 +54,7 @@ namespace Chemistry_Studio
         public string XMLForm()
         {
             string output = "";
-            output += "<root>\n" + root.XMLForm() + "<root>\n";
+            output += "<root>\n" + root.XMLForm() + "</root>\n";
             return output;
         }
 
