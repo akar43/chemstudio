@@ -619,7 +619,9 @@ namespace Chemistry_Studio
             {
                 Console.WriteLine("Program Crashed! with message : " + e.ToString());
             }
-            //Console.ReadLine();
+
+            Console.WriteLine(completeTrees[0].XMLForm());
+            Console.ReadLine();
             
         }
     }
