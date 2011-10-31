@@ -230,9 +230,18 @@ namespace Chemistry_Studio
             else return false;
         }
 
+        public static bool checkVariableBranch(Node tree)
+        {
+            bool flag=tree.isVariableInSubtree(tree.data);
+            foreach(Node temp in tree.children)
+                flag=flag && checkVariableBranch(temp);
+            
+            return flag;
+        }
         //Fit the tokens in a typesafe manner
         public static void typeSafe(List<ParseTree> unusedTokens, ParseTree tree, List<ParseTree> allTokens)
         {
+            int variableBranchSwitch=1;//MCQ - Change according to question
             if (tree.confidence < tree_rejection_threshold) return;
             if (tree.holeList.Count == 0)
             {
@@ -244,10 +253,16 @@ namespace Chemistry_Studio
                 if (tree.confidence >= tree_rejection_threshold)
                 {
                     //tree.standardForm();
-                    bool flag = false;
-                    foreach (ParseTree t in completeTrees)
+                    bool flag=true;
+                    /*foreach (ParseTree t in completeTrees) //Do you need to check for equality here?-Abhishek
                         flag = flag || t.isEqual(tree);
-                    if (!flag) completeTrees.Add(tree);
+                    if (!flag)*/ 
+                    //Check if "same" has at least one variable branch and "And" has both variable branches in MCQs
+                    if (variableBranchSwitch != 0)
+                    {
+                        flag = checkVariableBranch(tree.root);
+                    }
+                    if(flag) completeTrees.Add(tree);
                 }
 
                 if (unusedTokens.Count != 0)
@@ -620,7 +635,7 @@ namespace Chemistry_Studio
                 Console.WriteLine("Program Crashed! with message : " + e.ToString());
             }
 
-            Console.WriteLine(completeTrees[0].XMLForm());
+            //Console.WriteLine(completeTrees[0].XMLForm());
             Console.ReadLine();
             
         }

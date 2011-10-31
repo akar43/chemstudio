@@ -81,7 +81,7 @@ namespace Chemistry_Studio
         public Node()
         {
             this.parent = null;
-            this.data = "ZZ"; // zz as data represents a hole, reson for naming so is for lexical ordering
+            this.data = "ZZ"; // zz as data represents a hole, reason for naming so is for lexical ordering
             this.isHole = true;
             this.outputType = "bool";
         }
@@ -192,16 +192,27 @@ namespace Chemistry_Studio
             return output;
         }
 
-        public bool isVariableInSubtree()
+        public bool isVariableInSubtree(string predicate)
         {
             if (Tokens.variableTokens.Contains(this.data)) return true;
-
-            bool flag = false;
+            //Dont need to check for tokens other than And or Same
+            bool flag=true;
+            if (!(predicate.Equals("And") || predicate.Equals("Same")))
+                return true;
+            
+            if(predicate.Equals("Same"))
+                flag = false;
+            if(predicate.Equals("And"))
+                flag = true;
             if (this.children != null)
             {
                 foreach(Node temp in this.children)
                 {
-                    flag = flag | temp.isVariableInSubtree();
+                    if (predicate.Equals("Same"))
+                        flag = flag || temp.isVariableInSubtree(predicate);
+                    if (predicate.Equals("And"))
+                        flag = flag && temp.isVariableInSubtree(predicate);
+                    
                 }
             }
             return flag;
@@ -212,7 +223,7 @@ namespace Chemistry_Studio
             int num = this.children.Count;
             for (int i =1; i < num; i++)
             {
-                for (int j = i - 1; j < i; j++)
+                for (int j = i - 1; j < i; j++) //check i and i+1 ?
                 {
                     if (this.children[i].outputType == this.children[j].outputType)
                     {   

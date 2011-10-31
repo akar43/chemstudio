@@ -7,7 +7,7 @@ namespace Chemistry_Studio
 {
     public static class Tokens
     {
-        public static string[] variableTokens = { "x", "y", "z" };
+        public static string[] variableTokens = { "x1", "x2", "x3" };
 
         public static Dictionary<string, List<string>> inputTypePredicates;
         public static Dictionary<string, string> outputTypePredicates;
@@ -29,7 +29,7 @@ namespace Chemistry_Studio
             "ElectronAffinityProperty#numericFunc", "ConductanceProperty#numericFunc",
             
             "Halogen#bool", "GasAtSTP#bool", "LiquidAtSTP#bool", "Metalloid#bool", "NobleGas#bool", "AlkaliMetal#bool", "AlkalineEarthMetal#bool",
-            "RareEarthElement#bool", "IonicBond#bool", "CovalentBond#bool", "And#bool", "Or#bool", "x#elem", "z#elem", "H#elem", "He#elem",
+            "RareEarthElement#bool", "IonicBond#bool", "CovalentBond#bool", "And#bool", "Or#bool", "x1#elem", "x2#elem", "H#elem", "He#elem",
             "Li#elem", "Be#elem", "B#elem", "C#elem", "N#elem", "O#elem", "F#elem", "Ne#elem", "Na#elem", "Mg#elem", "Al#elem", "Si#elem",
             "P#elem", "S#elem", "Cl#elem", "K#elem", "Ar#elem", "Ca#elem", "Sc#elem", "Ti#elem", "V#elem", "Cr#elem", "Mn#elem", "Fe#elem",
             "Ni#elem", "Co#elem", "Cu#elem", "Zn#elem", "Ga#elem", "Ge#elem", "Se#elem", "Br#elem", "Kr#elem", "Rb#elem", "Sr#elem",
@@ -57,7 +57,7 @@ namespace Chemistry_Studio
         "Uuo#null","Uus#null","Max#numericFunc#domain","Min#numericFunc#domain","IE#elem","Halogen#elem","GasAtSTP#elem","LiquidAtSTP#elem","Metalloid#elem",
         "NobleGas#elem","AlkaliMetal#elem","AlkalineEarthMetal#elem","RareEarthElement#elem","IonicBond#elem#elem","CovalentBond#elem#elem",
         "AtomicNumber#elem","OxidationState#elem","Electronegativity#elem","ElectronAffinity#elem","Conductance#elem","IonicRadius#elem",
-        "AtomicRadius#elem","Group#elem","Period#elem","Metallic#elem","Same#num#num","And#bool#bool","Or#bool#bool","x#null","z#null", 
+        "AtomicRadius#elem","Group#elem","Period#elem","Metallic#elem","Same#num#num","And#bool#bool","Or#bool#bool","x1#null","x2#null", 
 
         "Trend#movement#numericFunc#change", "AtomicNumberProperty#null", "OxidationStateProperty#null", "IonicRadiusProperty#null",
         "AtomicRadiusProperty#null", "IEProperty#null", "MetallicProperty#null", "ElectronegativityProperty#null",
@@ -119,7 +119,7 @@ namespace Chemistry_Studio
           "least#Min", "minimum#Min", "lowest#Min", "weakest#Min", "worst#Min", "quantum number#QuantumNumber",
           "color#Color", "orbital#Orbitals", "family#Family", "electronegativity#Electronegativity", "metallic#Metallic",
           "electron affinity#ElectronAffinity", "conductor#Conductance", "oxidation state#OxidationState", "oxidation number#OxidationState",
-          "ionization energy#IE", "atomic number#AtomicNumber", "group#Group", "period#Period", "element#x", "same#Same", "and#And", "or#Or", 
+          "ionization energy#IE", "atomic number#AtomicNumber", "group#Group", "period#Period", "element#x1", "same#Same", "and#And", "or#Or", 
            "increase#Increase", "decrease#Decrease", "stays same#Stays_Same", "unchanged#Stays_Same", "not increase#Non_Increase",
            "not decrease#Non_Decrease", "left#Left", "right#Right", "up#Up", "down#Down", "top to bottom#Down", 
            "electronegativity#ElectronegativityProperty", "metallic#MetallicProperty", "electron affinity#ElectronAffinity",
