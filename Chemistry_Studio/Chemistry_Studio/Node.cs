@@ -192,26 +192,16 @@ namespace Chemistry_Studio
             return output;
         }
 
-        public bool isVariableInSubtree(string predicate)
+        public bool isVariableInSubtree()
         {
             if (Tokens.variableTokens.Contains(this.data)) return true;
             //Dont need to check for tokens other than And or Same
-            bool flag=true;
-            if (!(predicate.Equals("And") || predicate.Equals("Same")))
-                return true;
-            
-            if(predicate.Equals("Same"))
-                flag = false;
-            if(predicate.Equals("And"))
-                flag = true;
+            bool flag=false;
             if (this.children != null)
             {
                 foreach(Node temp in this.children)
                 {
-                    if (predicate.Equals("Same"))
-                        flag = flag || temp.isVariableInSubtree(predicate);
-                    if (predicate.Equals("And"))
-                        flag = flag && temp.isVariableInSubtree(predicate);
+                    flag = flag || temp.isVariableInSubtree();
                     
                 }
             }
