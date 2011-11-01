@@ -127,6 +127,7 @@ namespace Chemistry_Studio
           "ionization energy#IEProperty", "atomic number#AtomicNumberProperty", "atomic radius#AtomicRadiusProperty",
           "atomic size#AtomicRadiusProperty", "ionic radius#IonicRadiusProperty", "ionic size#IonicRadiusProperty"
             };
+
          //"left up#Left_Up", "up left#Left_Up", "left down#Left_Down",
            //"down left#Left_Down", "right up#Right_Up", "up right#Right_Up", "right down#Right_Down",  "down right#Right_Down", 
         //Excluded , "in#In"  "as#As" "at#At"

@@ -37,6 +37,7 @@ namespace Chemistry_Studio
         {
             options=new List<string>();
         }
+
         public Question_Struct(string fileName)
         {
             options=new List<string>();
@@ -281,7 +282,7 @@ namespace Chemistry_Studio
 
         public static bool checkVariableBranch(Node tree)
         {
-            if(!(tree.data.Equals("And") || tree.data.Equals("Some")))
+            if(!(tree.data.Equals("And") || tree.data.Equals("Same")))
                 return true;
             bool flag = true;
             if (tree.data.Equals("And"))
@@ -299,10 +300,11 @@ namespace Chemistry_Studio
             
             return flag;
         }
+
         //Fit the tokens in a typesafe manner
         public static void typeSafe(List<ParseTree> unusedTokens, ParseTree tree, List<ParseTree> allTokens)
         {
-            int variableBranchSwitch=1;//MCQ - Change according to question
+            int variableBranchSwitch= 1 ;//MCQ - Change according to question
             if (tree.confidence < tree_rejection_threshold) return;
             if (tree.holeList.Count == 0)
             {
@@ -314,16 +316,16 @@ namespace Chemistry_Studio
                 if (tree.confidence >= tree_rejection_threshold)
                 {
                     //tree.standardForm();
-                    bool flag=true;
-                    /*foreach (ParseTree t in completeTrees) //Do you need to check for equality here?-Abhishek
+                    bool flag = false;
+                    foreach (ParseTree t in completeTrees)
                         flag = flag || t.isEqual(tree);
-                    if (!flag)*/ 
+
                     //Check if "same" has at least one variable branch and "And" has both variable branches in MCQs
                     if (variableBranchSwitch != 0)
                     {
-                        flag = checkVariableBranch(tree.root);
+                        flag = flag || (!checkVariableBranch(tree.root));
                     }
-                    if(flag) completeTrees.Add(tree);
+                    if(!flag) completeTrees.Add(tree);
                 }
 
                 if (unusedTokens.Count != 0)
@@ -590,11 +592,30 @@ namespace Chemistry_Studio
             return;
         }
 
+        static void filterTokens(ref Dictionary<string, Position_Confidence> tokenList)
+        {
+            List<string> tokens = tokenList.Keys.ToList();
+            List<string> keysToRemove = new List<string>();
+
+            if (!(tokens.Contains("Max") || tokens.Contains("Min")))
+            {
+                foreach (KeyValuePair<string, Position_Confidence> temp in tokenList)
+                {
+                    if (temp.Key.EndsWith("Property")) keysToRemove.Add(temp.Key);
+                }
+
+                foreach (string temp in keysToRemove)
+                {
+                    tokenList.Remove(temp);
+                }
+            }
+        }
+
         public static void Main(string[] args)
         {
             Tokens.initialize();
             Tokens.initializePredSpec();
-            string question_path = "C:\\Users\\Abhishek\\Documents\\Visual Studio 2010\\Projects\\Chemistry_Studio\\Chemistry_Studio\\Chemistry_Studio\\Questions\\";
+            string question_path = "F:\\BTP_C#\\Chemistry_Studio\\Chemistry_Studio\\Questions\\";
             Question_Struct q1=new Question_Struct(question_path+"Q1.txt");
             Question_Struct q2 = new Question_Struct(question_path + "Q2.txt");
             Question_Struct q3 = new Question_Struct(question_path + "Q3.txt");
@@ -612,6 +633,8 @@ namespace Chemistry_Studio
             
             Dictionary<string,Position_Confidence> tokenList = findTokens(splitWords);
             addCoupledTokens(ref tokenList);
+            filterTokens(ref tokenList);
+
             Dictionary<string, List<string>> numbersToPredictesMatchingList = mostLikelyNumericPredicate(tokenList, splitWordsNumbers);
             
             List<ParseTree> tokenTrees = new List<ParseTree>();
@@ -623,63 +646,6 @@ namespace Chemistry_Studio
             foreach (ParseTree t in tokenTrees)
             {
                 Console.WriteLine(t.ToString());
-            }*/
-
-            /*
-            //Add all the remaining numeric predicates to the token list
-            foreach (string pred in Tokens.numericPredicates)
-            {
-                ParseTree temp = new ParseTree(new Node());
-                if (tokenList.ContainsKey(pred))
-                {
-                    for (int i = 0; i < tokenList[pred].positions.Count; i++)
-                    {
-                        if (tokenList[pred].confidences[i] == 0)
-                            continue;
-
-                        temp.root.isHole = false;
-                        temp.root.data = pred;
-                        temp.root.outputType = Tokens.outputTypePredicates[pred];
-                        //Set output type
-                        temp.root.children = new List<Node>();
-
-                        List<string> param = Tokens.inputTypePredicates[pred];
-                        if (param[0] != "null")
-                        {
-                            foreach (string x in param)
-                            {
-                                Node tempNode = new Node(temp.root);     //check that it appends to end of list
-                                temp.root.children.Add(tempNode);
-                                tempNode.outputType = x;
-                            }
-                        }
-                        tokenTrees.Add((ParseTree)temp.Clone());
-                    }
-                }       
-            }
-            */
-
-            //Add "And" to allTokens explicitly
-            /*if (!tokensConf.ContainsKey("And"))
-            {
-                ParseTree andToken = new ParseTree(new Node());
-                andToken.root.isHole = false;
-                andToken.root.data = "And";
-                andToken.root.outputType = Tokens.outputTypePredicates[andToken.root.data];
-                //Set output type
-                andToken.root.children = new List<Node>();
-
-                List<string> paramAnd = Tokens.inputTypePredicates[andToken.root.data];
-                if (paramAnd[0] != "null")
-                {
-                    foreach (string x in paramAnd)
-                    {
-                        Node tempNode = new Node();     //check that it appends to end of list
-                        andToken.root.children.Add(tempNode);
-                        tempNode.outputType = x;
-                    }
-                }
-                tokenTrees.Add((ParseTree)andToken.Clone());
             }*/
 
             ParseTree tree = new ParseTree(new Node());
@@ -695,7 +661,6 @@ namespace Chemistry_Studio
                 }
 
                 Console.WriteLine(output);
-                //Console.WriteLine(completeTrees[0].XMLForm());
             }
             catch(Exception e)
             {
