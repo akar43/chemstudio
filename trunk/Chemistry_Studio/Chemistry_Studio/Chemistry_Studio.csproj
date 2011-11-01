@@ -50,6 +50,12 @@
     <Compile Include="Tokens.cs" />
     <Compile Include="TypeSystem.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Questions\Q1.txt" />
+    <Content Include="Questions\Q2.txt" />
+    <Content Include="Questions\Q3.txt" />
+    <Content Include="Questions\Template.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
