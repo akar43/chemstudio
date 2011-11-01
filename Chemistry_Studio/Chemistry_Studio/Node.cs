@@ -194,7 +194,8 @@ namespace Chemistry_Studio
 
         public bool isVariableInSubtree()
         {
-            if (Tokens.variableTokens.Contains(this.data)) return true;
+            //if (Tokens.variableTokens.Contains(this.data)) return true;
+            if(this.data.StartsWith("x_")) return true;
             //Dont need to check for tokens other than And or Same
             bool flag=false;
             if (this.children != null)
