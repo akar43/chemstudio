@@ -1,0 +1,8 @@
+<question>
+<id>1</id>
+<sentence>Which element in Group 15 has the strongest metallic character?</sentence>
+<option1>N</option1>
+<option2>P</option2>
+<option3>As</option3>
+<option4>Sb</option4>
+</question>

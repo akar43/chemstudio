@@ -1,0 +1,8 @@
+<question>
+<id>2</id>
+<sentence>Which element is a noble gas and has the same period as Calcium?</sentence>
+<option1>He</option1>
+<option2>Ne</option2>
+<option3>Ar</option3>
+<option4>Kr</option4>
+</question>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml;
+
 namespace Chemistry_Studio
 {
     //Structure to contain positions and confidences of tokens obtained during parse
@@ -600,6 +601,7 @@ namespace Chemistry_Studio
             Console.WriteLine(q1);
             Console.WriteLine(q2);
             Console.WriteLine(q3);
+            
             string sentence = "";
             foreach (string str in args)
                 sentence += " " + str;
