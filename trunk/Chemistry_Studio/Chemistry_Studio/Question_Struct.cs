@@ -7,9 +7,9 @@ namespace Chemistry_Studio
 {
     class Question_Struct
     {
-        string id;
-        string question;
-        List<string> options;
+        public string id;
+        public string question;
+        public List<string> options;
 
         public Question_Struct()
         {

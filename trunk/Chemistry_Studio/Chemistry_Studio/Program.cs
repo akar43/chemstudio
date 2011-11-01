@@ -6,7 +6,6 @@ using System.Xml;
 
 namespace Chemistry_Studio
 {
-      
     class Program
     {
         static List<ParseTree> completeTrees=new List<ParseTree>();
@@ -612,22 +611,58 @@ namespace Chemistry_Studio
             }
         }
 
+        static void processOptions(List<string> optionList, ref Dictionary<string,Position_Confidence>tokenList)
+        {
+            string firstOption = optionList[0];
+
+            //first check for a number
+            int temp;
+            if (int.TryParse(firstOption, out temp))
+            {
+                ;
+            }
+            else
+            {
+                //not numeric return type; check for token
+                List<string> t1 = new List<string>();
+                t1.Add(firstOption);
+                Dictionary<string,Position_Confidence> t2 = findTokens(t1);
+                string returnType = null;
+                foreach (string t3 in t2.Keys)
+                {
+                    returnType = Tokens.outputTypePredicates[t3];
+                    break;
+                }
+                insertNewVariable(returnType, ref tokenList);
+            }
+        }
+
+        static int numVariablesInserted = 0;
+
+        static void insertNewVariable(string returnType, ref Dictionary<string,Position_Confidence>tokenList)
+        {
+            string var = "x_" + (++numVariablesInserted);
+            Tokens.outputTypePredicates[var] = returnType;
+            List<string> temp = new List<string>();
+            temp.Add("null");
+            Tokens.inputTypePredicates[var] = temp;
+            tokenList.Add(var, new Position_Confidence(1, 0));
+            return;
+        }
+
         public static void Main(string[] args)
         {
             Tokens.initialize();
             Tokens.initializePredSpec();
             string question_path_AK="C:\\Users\\Abhishek\\Documents\\Visual Studio 2010\\Projects\\Chemistry_Studio\\Chemistry_Studio\\Chemistry_Studio\\Questions\\";
             string question_path = "F:\\BTP_C#\\Chemistry_Studio\\Chemistry_Studio\\Questions\\";
-            /*Question_Struct q1=new Question_Struct(question_path_AK+"Q1.txt");
-            Question_Struct q2 = new Question_Struct(question_path_AK + "Q2.txt");
-            Question_Struct q3 = new Question_Struct(question_path_AK + "Q3.txt");
-            Console.WriteLine(q1);
-            Console.WriteLine(q2);
-            Console.WriteLine(q3);*/
+            Question_Struct q1=new Question_Struct(question_path+"Q1.txt");
             
-            string sentence = "";
-            foreach (string str in args)
-                sentence += " " + str;
+            //string sentence = "";
+            //foreach (string str in args)
+            //    sentence += " " + str;
+
+            string sentence = q1.question;
             sentence = sentence.ToLower();
             
             List<string> splitWords = tokenize(sentence);
@@ -635,6 +670,7 @@ namespace Chemistry_Studio
             
             Dictionary<string,Position_Confidence> tokenList = findTokens(splitWords);
             
+            processOptions(q1.options, ref tokenList);
 
             Dictionary<string, List<string>> numbersToPredictesMatchingList = mostLikelyNumericPredicate(tokenList, splitWordsNumbers);
             
