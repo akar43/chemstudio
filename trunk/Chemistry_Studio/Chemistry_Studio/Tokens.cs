@@ -12,7 +12,7 @@ namespace Chemistry_Studio
         public static Dictionary<string, List<string>> inputTypePredicates;
         public static Dictionary<string, string> outputTypePredicates;
 
-        public static List<string> numericPredicates = new List<string>(new string[] { "IE", "Group", "Period", "AtomicNumber", "OxidationState" });
+        public static List<string> numericPredicates = new List<string>(new string[] { "IE", "Group", "Period", "AtomicNumber", "OxidationState", "IonicRadius", "AtomicRadius", "Metallic", "Electronegativity", "ElectronAffinity", "Conductance" });
 
         public static string[] outputTypeList = {
             "Increase#change", "Decrease#change", "Stays_Same#change", "Non_Increase#change", "Non_Decrease#change", "Left#movement",

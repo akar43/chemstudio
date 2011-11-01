@@ -6,76 +6,7 @@ using System.Xml;
 
 namespace Chemistry_Studio
 {
-    //Structure to contain positions and confidences of tokens obtained during parse
-    class Position_Confidence
-    {
-        public List<double> confidences;
-        public List<int> positions;
-
-        public Position_Confidence(double confidence, int position)
-        {
-            confidences=new List<double>();
-            positions=new List<int>();
-            confidences.Add(confidence);
-            positions.Add(position);
-        }
-
-        public void add(double confidence, int position)
-        {
-            positions.Add(position);
-            confidences.Add(confidence);
-        }
-    }
-
-    class Question_Struct
-    {
-        string id;
-        string question;
-        List<string> options;
-        
-        public Question_Struct()
-        {
-            options=new List<string>();
-        }
-
-        public Question_Struct(string fileName)
-        {
-            options=new List<string>();
-            XmlDocument xmlDoc = null;
-            // Setting the XmlReaderSettings so as to ignore Comments from the Input XML file.
-            XmlReaderSettings readerSettings = new XmlReaderSettings();
-            readerSettings.IgnoreWhitespace = true;
-            readerSettings.IgnoreComments = true;
-
-            using (XmlReader reader = XmlReader.Create(fileName, readerSettings))
-            {
-                xmlDoc = new XmlDocument();
-                xmlDoc.Load(reader);
-            }
-            XmlNode questionTag = xmlDoc.FirstChild; // Skipping the root node.
-            this.id = questionTag.ChildNodes[0].InnerText;
-            this.question = questionTag.ChildNodes[1].InnerText;
-            
-            for(int i=2;i<questionTag.ChildNodes.Count;i++)
-            {
-                options.Add(questionTag.ChildNodes[i].InnerText);
-            }
-        }
-
-        public override string ToString()
-        {
-            string representation = this.id+") ";
-            representation += this.question + "\n\n";
-            for (int i = 0; i < options.Count; i++)
-            {
-                representation += (i+1).ToString() + ". " + options[i] + "\n";
-            }
-            return representation;
-        }
-
-        }
-
-    
+      
     class Program
     {
         static List<ParseTree> completeTrees=new List<ParseTree>();
@@ -530,8 +461,8 @@ namespace Chemistry_Studio
             }
         }
 
-        static void handleNumbers(Dictionary<string, List<string>> numbersToPredictesMatchingList,
-            Dictionary<string, Position_Confidence> tokenList, ref List<ParseTree> tokenTrees)
+
+        static void handleNumbers(Dictionary<string, List<string>> numbersToPredictesMatchingList, Dictionary<string, Position_Confidence> tokenList, ref List<ParseTree> tokenTrees)
         {
             //Add numeric tokens as Same(NumericPred(...),number)
             foreach (KeyValuePair<string, List<string>> numToPred in numbersToPredictesMatchingList)
@@ -578,6 +509,76 @@ namespace Chemistry_Studio
             }
         }
 
+        static void addSameNumericPredicate(Dictionary<string, Position_Confidence> tokenList, ref List<ParseTree> tokenTrees)
+        {
+            Position_Confidence samePositions = tokenList["Same"];
+            List<int> samePositionstobeRemoved = new List<int>();
+            foreach (int position in samePositions.positions)
+            {
+                foreach (string numericPredicate in Tokens.numericPredicates)
+                {
+                    if (tokenList.ContainsKey(numericPredicate))
+                    {
+                        if (tokenList[numericPredicate].positions.Contains(position + 1))
+                        {
+                            //Add the Same(NumPred,NumPred) structure
+                            ParseTree temp = new ParseTree(new Node());
+                            temp.root.isHole = false;
+                            temp.root.data = "Same";
+                            temp.root.outputType = Tokens.outputTypePredicates["Same"];
+                            temp.root.children = new List<Node>();
+                            List<string> param = Tokens.inputTypePredicates["Same"];
+                            if (param[0] != "null")
+                            {
+                                foreach (string x in param)
+                                {
+                                    Node tempNode = new Node(temp.root);     //check that it appends to end of list
+                                    temp.root.children.Add(tempNode);
+                                    tempNode.outputType = x;
+                                }
+                            }
+                            
+                            temp.root.children[1].data = numericPredicate;
+                            temp.root.children[1].isHole = false;
+                            temp.root.children[1].children = new List<Node>();
+
+                            param = Tokens.inputTypePredicates[temp.root.children[1].data];
+                            if (param[0] != "null")
+                            {
+                                foreach (string x in param)
+                                {
+                                    Node tempNode = new Node(temp.root.children[1]);
+                                    temp.root.children[1].children.Add(tempNode);
+                                    tempNode.outputType = x;
+                                }
+                            }
+
+                            temp.root.children[0].data = numericPredicate;
+                            temp.root.children[0].isHole = false;
+                            temp.root.children[0].children = new List<Node>();
+
+                            param = Tokens.inputTypePredicates[temp.root.children[1].data];
+                            if (param[0] != "null")
+                            {
+                                foreach (string x in param)
+                                {
+                                    Node tempNode = new Node(temp.root.children[0]);
+                                    temp.root.children[0].children.Add(tempNode);
+                                    tempNode.outputType = x;
+                                }
+                            }
+                            tokenTrees.Add((ParseTree)temp.Clone());
+                            //Remove the entries from Position_Confidence structures of Same and NumericPredicate
+                            tokenList[numericPredicate].remove(position + 1);
+                            samePositionstobeRemoved.Add(position);
+                            break;
+                        }
+                    }
+                }
+            }
+            foreach (int pos in samePositionstobeRemoved)
+                samePositions.remove(pos);
+        }
         static void addCoupledTokens(ref Dictionary<string, Position_Confidence> tokenList)
         {
             foreach (KeyValuePair<string, Position_Confidence> temp in tokenList)
@@ -615,13 +616,14 @@ namespace Chemistry_Studio
         {
             Tokens.initialize();
             Tokens.initializePredSpec();
+            string question_path_AK="C:\\Users\\Abhishek\\Documents\\Visual Studio 2010\\Projects\\Chemistry_Studio\\Chemistry_Studio\\Chemistry_Studio\\Questions\\";
             string question_path = "F:\\BTP_C#\\Chemistry_Studio\\Chemistry_Studio\\Questions\\";
-            Question_Struct q1=new Question_Struct(question_path+"Q1.txt");
-            Question_Struct q2 = new Question_Struct(question_path + "Q2.txt");
-            Question_Struct q3 = new Question_Struct(question_path + "Q3.txt");
+            /*Question_Struct q1=new Question_Struct(question_path_AK+"Q1.txt");
+            Question_Struct q2 = new Question_Struct(question_path_AK + "Q2.txt");
+            Question_Struct q3 = new Question_Struct(question_path_AK + "Q3.txt");
             Console.WriteLine(q1);
             Console.WriteLine(q2);
-            Console.WriteLine(q3);
+            Console.WriteLine(q3);*/
             
             string sentence = "";
             foreach (string str in args)
@@ -632,18 +634,21 @@ namespace Chemistry_Studio
             List<string> splitWordsNumbers = tokenize(sentence);
             
             Dictionary<string,Position_Confidence> tokenList = findTokens(splitWords);
-            addCoupledTokens(ref tokenList);
-            filterTokens(ref tokenList);
+            
 
             Dictionary<string, List<string>> numbersToPredictesMatchingList = mostLikelyNumericPredicate(tokenList, splitWordsNumbers);
             
             List<ParseTree> tokenTrees = new List<ParseTree>();
-
+            
+            filterTokens(ref tokenList);
+            addCoupledTokens(ref tokenList);
+            addSameNumericPredicate(tokenList, ref tokenTrees);
+            
             handleNumbers(numbersToPredictesMatchingList, tokenList, ref tokenTrees);
             addSimpleTokens(tokenList, ref tokenTrees);
 
-            /*viewTokens(tokenList);
-            foreach (ParseTree t in tokenTrees)
+           
+            /*foreach (ParseTree t in tokenTrees)
             {
                 Console.WriteLine(t.ToString());
             }*/
@@ -653,6 +658,7 @@ namespace Chemistry_Studio
             {
                 typeSafe(tokenTrees, (ParseTree)tree.Clone(), tokenTrees);
                 string output = "";
+                output+="Question: "+sentence+"\n\n";
                 completeTrees.Sort();
                 completeTrees.Reverse();
                 foreach (ParseTree x in completeTrees)

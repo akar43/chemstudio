@@ -43,6 +43,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Question_Struct.cs" />
+    <Compile Include="Position_Confidence.cs" />
     <Compile Include="LD.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="Program.cs" />
