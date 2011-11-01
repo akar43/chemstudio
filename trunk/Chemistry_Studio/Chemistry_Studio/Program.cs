@@ -510,6 +510,7 @@ namespace Chemistry_Studio
 
         static void addSameNumericPredicate(Dictionary<string, Position_Confidence> tokenList, ref List<ParseTree> tokenTrees)
         {
+            if (!tokenList.ContainsKey("Same")) return;
             Position_Confidence samePositions = tokenList["Same"];
             List<int> samePositionstobeRemoved = new List<int>();
             foreach (int position in samePositions.positions)
@@ -597,7 +598,7 @@ namespace Chemistry_Studio
             List<string> tokens = tokenList.Keys.ToList();
             List<string> keysToRemove = new List<string>();
 
-            if (!(tokens.Contains("Max") || tokens.Contains("Min")))
+            if (!(tokens.Contains("Max") || tokens.Contains("Min") || tokens.Contains("Trend") || tokens.Contains("Order")))
             {
                 foreach (KeyValuePair<string, Position_Confidence> temp in tokenList)
                 {
@@ -611,7 +612,7 @@ namespace Chemistry_Studio
             }
         }
 
-        static void processOptions(List<string> optionList, ref Dictionary<string,Position_Confidence>tokenList)
+        static void processOptions(List<string> optionList, ref Dictionary<string, Position_Confidence> tokenList, ref List<ParseTree> tokenTrees)
         {
             string firstOption = optionList[0];
 
@@ -619,75 +620,115 @@ namespace Chemistry_Studio
             int temp;
             if (int.TryParse(firstOption, out temp))
             {
-                ;
+                //insert Same(Hole, x_i) and Same(x_i, Hole)
+                string var = getNewVariable("num");
+
+                ParseTree temp1 = new ParseTree(new Node());
+                temp1.root.isHole = false;
+                temp1.root.data = "Same";
+                temp1.root.outputType = Tokens.outputTypePredicates["Same"];
+                temp1.root.children = new List<Node>();
+                List<string> param = Tokens.inputTypePredicates["Same"];
+                if (param[0] != "null")
+                {
+                    foreach (string x in param)
+                    {
+                        Node tempNode = new Node(temp1.root);     //check that it appends to end of list
+                        temp1.root.children.Add(tempNode);
+                        tempNode.outputType = x;
+                    }
+                }
+                temp1.root.children[0].data = var;
+                temp1.root.children[0].isHole = false;
+                temp1.root.children[0].children = new List<Node>();
+
+                param = Tokens.inputTypePredicates[temp1.root.children[0].data];
+                if (param[0] != "null")
+                {
+                    foreach (string x in param)
+                    {
+                        Node tempNode = new Node(temp1.root.children[0]);
+                        temp1.root.children[0].children.Add(tempNode);
+                        tempNode.outputType = x;
+                    }
+                }
+                tokenTrees.Add(temp1);
+            }
+            else if(firstOption.Contains("<") || firstOption.Contains(">"))
+            {
+                tokenList.Add("Order", new Position_Confidence(1, 0));
+                if (firstOption.Contains("<") && !tokenList.ContainsKey("Increase"))
+                    tokenList.Add("Increase", new Position_Confidence(1, 0));
+                if (firstOption.Contains(">") && !tokenList.ContainsKey("Decrease"))
+                    tokenList.Add("Decrease", new Position_Confidence(1, 0));
+                string var = getNewVariable("set");
+                tokenList.Add(var, new Position_Confidence(1, 0));
             }
             else
             {
                 //not numeric return type; check for token
                 List<string> t1 = new List<string>();
-                t1.Add(firstOption);
+                t1.Add(firstOption.ToLower());
+
                 Dictionary<string,Position_Confidence> t2 = findTokens(t1);
+                if (t2.Count == 0) return;
+
                 string returnType = null;
-                foreach (string t3 in t2.Keys)
-                {
-                    returnType = Tokens.outputTypePredicates[t3];
-                    break;
-                }
-                insertNewVariable(returnType, ref tokenList);
+                returnType = Tokens.outputTypePredicates[(t2.Keys.ToList())[0]];
+                if (returnType == "elem" && tokenList.ContainsKey("$0")) return;
+                string var = getNewVariable(returnType);
+                tokenList.Add(var, new Position_Confidence(1, 0));
             }
         }
 
         static int numVariablesInserted = 0;
 
-        static void insertNewVariable(string returnType, ref Dictionary<string,Position_Confidence>tokenList)
+        static string getNewVariable(string returnType)
         {
-            string var = "x_" + (++numVariablesInserted);
+            string var = "$" + (++numVariablesInserted);
             Tokens.outputTypePredicates[var] = returnType;
             List<string> temp = new List<string>();
             temp.Add("null");
             Tokens.inputTypePredicates[var] = temp;
-            tokenList.Add(var, new Position_Confidence(1, 0));
-            return;
+            return var;
         }
 
         public static void Main(string[] args)
         {
             Tokens.initialize();
             Tokens.initializePredSpec();
-            string question_path_AK="C:\\Users\\Abhishek\\Documents\\Visual Studio 2010\\Projects\\Chemistry_Studio\\Chemistry_Studio\\Chemistry_Studio\\Questions\\";
+            string question_path_AK = "C:\\Users\\Abhishek\\Documents\\Visual Studio 2010\\Projects\\Chemistry_Studio\\Chemistry_Studio\\Chemistry_Studio\\Questions\\";
             string question_path = "F:\\BTP_C#\\Chemistry_Studio\\Chemistry_Studio\\Questions\\";
-            Question_Struct q1=new Question_Struct(question_path+"Q1.txt");
+            Question_Struct q4=new Question_Struct(question_path+"Q7.txt");
             
             //string sentence = "";
             //foreach (string str in args)
             //    sentence += " " + str;
 
-            string sentence = q1.question;
+            string sentence = q4.question;
             sentence = sentence.ToLower();
             
             List<string> splitWords = tokenize(sentence);
             List<string> splitWordsNumbers = tokenize(sentence);
             
             Dictionary<string,Position_Confidence> tokenList = findTokens(splitWords);
-            
-            processOptions(q1.options, ref tokenList);
-
             Dictionary<string, List<string>> numbersToPredictesMatchingList = mostLikelyNumericPredicate(tokenList, splitWordsNumbers);
-            
             List<ParseTree> tokenTrees = new List<ParseTree>();
-            
-            filterTokens(ref tokenList);
+
+            processOptions(q4.options, ref tokenList, ref tokenTrees);
             addCoupledTokens(ref tokenList);
+            filterTokens(ref tokenList); //this order of addcoupled and filter are important
             addSameNumericPredicate(tokenList, ref tokenTrees);
             
             handleNumbers(numbersToPredictesMatchingList, tokenList, ref tokenTrees);
             addSimpleTokens(tokenList, ref tokenTrees);
-
-           
-            /*foreach (ParseTree t in tokenTrees)
+            
+            /*
+            foreach (ParseTree t in tokenTrees)
             {
                 Console.WriteLine(t.ToString());
-            }*/
+            }
+            */
 
             ParseTree tree = new ParseTree(new Node());
             try

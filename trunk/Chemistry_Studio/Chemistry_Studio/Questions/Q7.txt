@@ -1,0 +1,8 @@
+<question>
+<id>7</id>
+<sentence>Atomic size of the following elements decreases in the order</sentence>
+<option1> B > Be >Li</option1>
+<option2>Be > Li > B</option2>
+<option3>Li> Be>B</option3>
+<option4>Li>B>Be</option4>
+</question>
