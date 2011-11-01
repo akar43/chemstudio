@@ -1,0 +1,8 @@
+<question>
+<id>5</id>
+<sentence>How does atomic radius vary as we go down a group?</sentence>
+<option1>increases</option1>
+<option2>decreases</option2>
+<option3>stays same</option3>
+<option4>can't say</option4>
+</question>

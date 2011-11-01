@@ -53,9 +53,13 @@
     <Compile Include="TypeSystem.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Questions\Q4.txt" />
     <Content Include="Questions\Q1.txt" />
     <Content Include="Questions\Q2.txt" />
     <Content Include="Questions\Q3.txt" />
+    <Content Include="Questions\Q5.txt" />
+    <Content Include="Questions\Q6.txt" />
+    <Content Include="Questions\Q7.txt" />
     <Content Include="Questions\Template.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
