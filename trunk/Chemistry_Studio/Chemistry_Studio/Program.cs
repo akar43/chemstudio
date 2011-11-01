@@ -232,9 +232,21 @@ namespace Chemistry_Studio
 
         public static bool checkVariableBranch(Node tree)
         {
-            bool flag=tree.isVariableInSubtree(tree.data);
-            foreach(Node temp in tree.children)
-                flag=flag && checkVariableBranch(temp);
+            if(!(tree.data.Equals("And") || tree.data.Equals("Some")))
+                return true;
+            bool flag = true;
+            if (tree.data.Equals("And"))
+            {
+                flag = true;
+                foreach (Node temp in tree.children)
+                    flag = flag && temp.isVariableInSubtree();
+            }
+            if(tree.data.Equals("Same"))
+            {
+                flag=false;
+                foreach (Node temp in tree.children)
+                    flag = flag || temp.isVariableInSubtree();
+            }
             
             return flag;
         }
@@ -635,7 +647,7 @@ namespace Chemistry_Studio
                 Console.WriteLine("Program Crashed! with message : " + e.ToString());
             }
 
-            //Console.WriteLine(completeTrees[0].XMLForm());
+            Console.WriteLine(completeTrees[0].XMLForm());
             Console.ReadLine();
             
         }
