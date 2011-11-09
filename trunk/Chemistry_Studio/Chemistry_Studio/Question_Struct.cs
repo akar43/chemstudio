@@ -16,6 +16,17 @@ namespace Chemistry_Studio
             options = new List<string>();
         }
 
+        public Question_Struct(string sentence, bool fake)
+        {
+            this.options = new List<string>();
+            string[] temp = sentence.Split('#');
+            this.question = temp[0];
+            for (int i = 1; i < temp.Length; i++)
+            {
+                this.options.Add(temp[i]);
+            }
+        }
+
         public Question_Struct(string fileName)
         {
             options = new List<string>();

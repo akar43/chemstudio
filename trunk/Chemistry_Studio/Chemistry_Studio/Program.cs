@@ -622,6 +622,8 @@ namespace Chemistry_Studio
             {
                 //insert Same(Hole, x_i) and Same(x_i, Hole)
                 string var = getNewVariable("num");
+                
+                optionVariable = var;
 
                 ParseTree temp1 = new ParseTree(new Node());
                 temp1.root.isHole = false;
@@ -662,6 +664,8 @@ namespace Chemistry_Studio
                 if (firstOption.Contains(">") && !tokenList.ContainsKey("Decrease"))
                     tokenList.Add("Decrease", new Position_Confidence(1, 0));
                 string var = getNewVariable("set");
+                optionVariable = var;
+
                 tokenList.Add(var, new Position_Confidence(1, 0));
             }
             else
@@ -675,8 +679,11 @@ namespace Chemistry_Studio
 
                 string returnType = null;
                 returnType = Tokens.outputTypePredicates[(t2.Keys.ToList())[0]];
-                if (returnType == "elem" && tokenList.ContainsKey("$0")) return;
+                if (returnType == "elem" && tokenList.ContainsKey("$0")) { optionVariable = "$0"; return; }
                 string var = getNewVariable(returnType);
+
+                optionVariable = var;
+
                 tokenList.Add(var, new Position_Confidence(1, 0));
             }
         }
@@ -693,20 +700,37 @@ namespace Chemistry_Studio
             return var;
         }
 
+        static string optionVariable;
+
+        static string writeXMLOutput(Question_Struct q, ParseTree tree)
+        {
+            string output = "<root>\n" + tree.XMLForm() + "\n";
+            output += "<Domain type = \"Options\" variable = \"" + optionVariable + "\">\n";
+            foreach (string option in q.options)
+            {
+                output += "<Arg>" + option + "</Arg>\n";
+            }
+            output += "</Domain>\n</root>";
+
+            return output;
+        }
+
         public static void Main(string[] args)
         {
             Tokens.initialize();
             Tokens.initializePredSpec();
-            string question_path_AK = "C:\\Users\\Abhishek\\Documents\\Visual Studio 2010\\Projects\\Chemistry_Studio\\Chemistry_Studio\\Chemistry_Studio\\Questions\\";
-            string question_path = "F:\\BTP_C#\\Chemistry_Studio\\Chemistry_Studio\\Questions\\";
-            Question_Struct q4=new Question_Struct(question_path+"Q7.txt");
+            //string question_path_AK = "C:\\Users\\Abhishek\\Documents\\Visual Studio 2010\\Projects\\Chemistry_Studio\\Chemistry_Studio\\Chemistry_Studio\\Questions\\";
+            //string question_path = "F:\\BTP_C#\\Chemistry_Studio\\Chemistry_Studio\\Questions\\";
             
-            //string sentence = "";
-            //foreach (string str in args)
-            //    sentence += " " + str;
+            //Question_Struct q4=new Question_Struct(question_path+"Q7.txt");
 
-            string sentence = q4.question;
-            sentence = sentence.ToLower();
+            string sentence = "";
+            foreach (string str in args)
+               sentence += " " + str;
+            Question_Struct q = new Question_Struct(sentence, true);
+            
+            //string sentence = q4.question;
+            //sentence = sentence.ToLower();
             
             List<string> splitWords = tokenize(sentence);
             List<string> splitWordsNumbers = tokenize(sentence);
@@ -715,7 +739,7 @@ namespace Chemistry_Studio
             Dictionary<string, List<string>> numbersToPredictesMatchingList = mostLikelyNumericPredicate(tokenList, splitWordsNumbers);
             List<ParseTree> tokenTrees = new List<ParseTree>();
 
-            processOptions(q4.options, ref tokenList, ref tokenTrees);
+            processOptions(q.options, ref tokenList, ref tokenTrees);
             addCoupledTokens(ref tokenList);
             filterTokens(ref tokenList); //this order of addcoupled and filter are important
             addSameNumericPredicate(tokenList, ref tokenTrees);
@@ -735,7 +759,7 @@ namespace Chemistry_Studio
             {
                 typeSafe(tokenTrees, (ParseTree)tree.Clone(), tokenTrees);
                 string output = "";
-                output+="Question: "+sentence+"\n\n";
+                output+="Question: " + q.ToString() + "\n\n";
                 completeTrees.Sort();
                 completeTrees.Reverse();
                 foreach (ParseTree x in completeTrees)
@@ -743,15 +767,15 @@ namespace Chemistry_Studio
                     output = output + x + " Confidence = " + x.confidence + " \n";
                 }
 
+                //output += "\nXML FORM OF TOP TREE :\n" + writeXMLOutput(q, completeTrees[0]);
                 Console.WriteLine(output);
+
             }
             catch(Exception e)
             {
                 Console.WriteLine("Program Crashed! with message : " + e.ToString());
             }
-
-            //Console.WriteLine(completeTrees[0].XMLForm());
-            Console.ReadLine();
+            //Console.ReadLine();
             
         }
     }
