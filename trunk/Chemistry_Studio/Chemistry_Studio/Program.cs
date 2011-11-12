@@ -720,9 +720,9 @@ namespace Chemistry_Studio
             Tokens.initialize();
             Tokens.initializePredSpec();
             //string question_path_AK = "C:\\Users\\Abhishek\\Documents\\Visual Studio 2010\\Projects\\Chemistry_Studio\\Chemistry_Studio\\Chemistry_Studio\\Questions\\";
-            //string question_path = "F:\\BTP_C#\\Chemistry_Studio\\Chemistry_Studio\\Questions\\";
+            string question_path = "F:\\BTP_C#\\Chemistry_Studio\\Chemistry_Studio\\Questions\\";
             
-            //Question_Struct q4=new Question_Struct(question_path+"Q7.txt");
+            Question_Struct q4=new Question_Struct(question_path+"Q7.txt");
 
             string sentence = "";
             foreach (string str in args)
