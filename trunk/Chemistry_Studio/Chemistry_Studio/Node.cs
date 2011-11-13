@@ -158,13 +158,21 @@ namespace Chemistry_Studio
         public string XMLForm()
         {
             string output = "" ;
-            if (this.children == null || this.children.Count == 0)
-                output += "<leaf> " + this.data + " </leaf>\n";
+            int temp;
+
+            if (this.data.StartsWith("$") || this.outputType == "elem" || int.TryParse(this.data, out temp))
+            {
+                //if (this.children == null || this.children.Count == 0)
+                output += "<Leaf> " + this.data + " </Leaf>\n";
+            }
             else
             {
                 output += "<" + this.data + ">\n";
-                foreach (Node t in this.children)
-                    output += t.XMLForm();
+                if (!(this.children == null || this.children.Count == 0))
+                {
+                    foreach (Node t in this.children)
+                        output += t.XMLForm();
+                }
                 output += "</" + this.data + ">\n";
             }
             return output;
