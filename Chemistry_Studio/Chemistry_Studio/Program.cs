@@ -12,7 +12,9 @@ namespace Chemistry_Studio
         static Char[] delims = {' ',',',':','?','.','-'};
         static double tokenMatch_threshold = 0.75;
         static double tree_rejection_threshold = 0.5;
-        
+        static int variableBranchSwitch= 1 ;//MCQ - Change according to question
+        static int questionType=0;//1 - MCQ, 2 - True/False 3 - Interrogative
+
         //Predicate to remove all null strings detected during the parse
         private static bool isNullString(String s)
         {
@@ -234,7 +236,7 @@ namespace Chemistry_Studio
         //Fit the tokens in a typesafe manner
         public static void typeSafe(List<ParseTree> unusedTokens, ParseTree tree, List<ParseTree> allTokens)
         {
-            int variableBranchSwitch= 1 ;//MCQ - Change according to question
+            
             if (tree.confidence < tree_rejection_threshold) return;
             if (tree.holeList.Count == 0)
             {
@@ -387,8 +389,7 @@ namespace Chemistry_Studio
         }
 
         //For each number in question, sort all numeric predicates in decreasing oreder of likelihood based on closeness with the number
-        static Dictionary<string, List<string>> mostLikelyNumericPredicate(Dictionary<string, Position_Confidence> tokenList,
-            List<string> splitWords)
+        static Dictionary<string, List<string>> mostLikelyNumericPredicate(Dictionary<string, Position_Confidence> tokenList, List<string> splitWords)
         {
             List<string> predicates = new List<string>();
             List<int> predicatePositions = new List<int>();
@@ -579,6 +580,7 @@ namespace Chemistry_Studio
             foreach (int pos in samePositionstobeRemoved)
                 samePositions.remove(pos);
         }
+
         static void addCoupledTokens(ref Dictionary<string, Position_Confidence> tokenList)
         {
             foreach (KeyValuePair<string, Position_Confidence> temp in tokenList)
@@ -614,13 +616,19 @@ namespace Chemistry_Studio
 
         static void processOptions(List<string> optionList, ref Dictionary<string, Position_Confidence> tokenList, ref List<ParseTree> tokenTrees)
         {
-            string firstOption = optionList[0];
+            if (optionList.Count == 0)
+            {
+                questionType=3;
+                return;
+            }
+            questionType=1;
+            string firstOption = optionList[0].ToLower();
 
             //first check for a number
             int temp;
             if (int.TryParse(firstOption, out temp))
             {
-                //insert Same(Hole, x_i) and Same(x_i, Hole)
+                
                 string var = getNewVariable("num");
                 
                 optionVariable = var;
@@ -668,18 +676,29 @@ namespace Chemistry_Studio
 
                 tokenList.Add(var, new Position_Confidence(1, 0));
             }
+
+            else if (firstOption == "true" || firstOption == "false")
+            {
+                questionType = 2;
+                variableBranchSwitch = 0;
+            }
+
             else
             {
                 //not numeric return type; check for token
-                List<string> t1 = new List<string>();
-                t1.Add(firstOption.ToLower());
-
-                Dictionary<string,Position_Confidence> t2 = findTokens(t1);
+                
+                Dictionary<string, Position_Confidence> t2 = findTokens(tokenize(firstOption));
                 if (t2.Count == 0) return;
 
                 string returnType = null;
-                returnType = Tokens.outputTypePredicates[(t2.Keys.ToList())[0]];
-                if (returnType == "elem" && tokenList.ContainsKey("$0")) { optionVariable = "$0"; return; }
+                foreach (string tempkey in t2.Keys.ToList())
+                {
+                    returnType = Tokens.outputTypePredicates[tempkey];
+                    if (Tokens.inputTypePredicates[tempkey][0] == "null")
+                        break;
+                }
+
+                if (returnType == "elem" && tokenList.ContainsKey("$1")) { optionVariable = "$1"; return; }
                 string var = getNewVariable(returnType);
 
                 optionVariable = var;
@@ -688,7 +707,7 @@ namespace Chemistry_Studio
             }
         }
 
-        static int numVariablesInserted = 0;
+        static int numVariablesInserted = 1;
 
         static string getNewVariable(string returnType)
         {
@@ -705,11 +724,46 @@ namespace Chemistry_Studio
         static string writeXMLOutput(Question_Struct q, ParseTree tree)
         {
             string output = "<root>\n" + tree.XMLForm() + "\n";
-            output += "<Domain type = \"Options\" variable = \"" + optionVariable + "\">\n";
+            switch (questionType)
+            {
+                case 1: 
+                    output += "<Domain type = \"Options\" variable = \"" + optionVariable + "\">\n";
+                    foreach (string option in q.options)
+                    {
+                        
+                        Dictionary<string, Position_Confidence> t2 = findTokens(tokenize(option.ToLower()));
+                        if (t2.Count == 0)
+                        {
+                            //output += "<Arg>" + option + "</Arg>\n";
+                            continue;
+                        }
+                        string finaloption="";
+                       
+                        foreach (string tempkey in t2.Keys.ToList())
+                        {
+                            if (Tokens.inputTypePredicates[tempkey][0] == "null")
+                            {
+                                finaloption = tempkey;
+                                break;
+                            }
+                        }
+                        output += "<Arg>" + finaloption + "</Arg>\n";
+                    }
+                        
+                    break;
+                case 2:
+                    output += "<Domain type = \"TrueFalse\">\n";
+                    break;
+                case 3:
+                    output += "<Domain>";
+                    break;
+            }
+
+            /*output += "<Domain type = \"Options\" variable = \"" + optionVariable + "\">\n";
             foreach (string option in q.options)
             {
                 output += "<Arg>" + option + "</Arg>\n";
-            }
+            }*/
             output += "</Domain>\n</root>";
 
             return output;
@@ -722,18 +776,19 @@ namespace Chemistry_Studio
             //string question_path_AK = "C:\\Users\\Abhishek\\Documents\\Visual Studio 2010\\Projects\\Chemistry_Studio\\Chemistry_Studio\\Chemistry_Studio\\Questions\\";
             string question_path = "F:\\BTP_C#\\Chemistry_Studio\\Chemistry_Studio\\Questions\\";
             
-            Question_Struct q4=new Question_Struct(question_path+"Q7.txt");
+            //Question_Struct q4=new Question_Struct(question_path+"Q7.txt");
 
             string sentence = "";
             foreach (string str in args)
                sentence += " " + str;
+           
             Question_Struct q = new Question_Struct(sentence, true);
             
             //string sentence = q4.question;
             //sentence = sentence.ToLower();
             
-            List<string> splitWords = tokenize(sentence);
-            List<string> splitWordsNumbers = tokenize(sentence);
+            List<string> splitWords = tokenize(q.question.ToLower());
+            List<string> splitWordsNumbers = tokenize(q.question.ToLower());
             
             Dictionary<string,Position_Confidence> tokenList = findTokens(splitWords);
             Dictionary<string, List<string>> numbersToPredictesMatchingList = mostLikelyNumericPredicate(tokenList, splitWordsNumbers);
@@ -755,7 +810,7 @@ namespace Chemistry_Studio
             */
 
             ParseTree tree = new ParseTree(new Node());
-            try
+            //try
             {
                 typeSafe(tokenTrees, (ParseTree)tree.Clone(), tokenTrees);
                 string output = "";
@@ -766,16 +821,16 @@ namespace Chemistry_Studio
                 {
                     output = output + x + " Confidence = " + x.confidence + " \n";
                 }
-
-                //output += "\nXML FORM OF TOP TREE :\n" + writeXMLOutput(q, completeTrees[0]);
+                if(completeTrees.Count!=0)
+                    output += "\nXML FORM OF TOP TREE :\n" + writeXMLOutput(q, completeTrees[0]);
                 Console.WriteLine(output);
 
             }
-            catch(Exception e)
-            {
-                Console.WriteLine("Program Crashed! with message : " + e.ToString());
-            }
-            //Console.ReadLine();
+            //catch(Exception e)
+            //{
+              //  Console.WriteLine("Program Crashed! with message : " + e.ToString());
+            //}
+            Console.ReadLine();
             
         }
     }

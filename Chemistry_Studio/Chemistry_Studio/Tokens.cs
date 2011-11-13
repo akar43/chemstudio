@@ -12,22 +12,22 @@ namespace Chemistry_Studio
         public static Dictionary<string, List<string>> inputTypePredicates;
         public static Dictionary<string, string> outputTypePredicates;
 
-        public static List<string> numericPredicates = new List<string>(new string[] { "IE", "Group", "Period", "AtomicNumber", "OxidationState", "IonicRadius", "AtomicRadius", "Metallic", "Electronegativity", "ElectronAffinity", "Conductance" });
+        public static List<string> numericPredicates = new List<string>(new string[] { "FirstIonisationEnergy", "Group", "Period", "AtomicNumber", "OxidationState", "IonicRadius", "AtomicRadius", "Metallic", "Electronegativity", "ElectronAffinity", "Conductance" });
 
         public static string[] outputTypeList = {
             "Order#bool",
             
-            "Increase#change", "Decrease#change", "Stays_Same#change", "Non_Increase#change", "Non_Decrease#change", "Left#movement",
+            "Increases#change", "Decreases#change", "Constant#change", "Non_Increase#change", "Non_Decrease#change", "Left#movement",
             "Right#movement", "Up#movement", "Down#movement", "Left_Up#movement", "Left_Down#movement", "Right_Up#movement",
             "Right_Down#movement", "Trend#bool", 
             
             "Max#bool", "Min#bool", "Same#bool", "Period#num", "Group#num", 
             
             "AtomicNumber#num", "OxidationState#num", "IonicRadius#num",
-            "AtomicRadius#num", "IE#num", "Metallic#num", "Electronegativity#num", "ElectronAffinity#num", "Conductance#num",
+            "AtomicRadius#num", "FirstIonisationEnergy#num", "Metallic#num", "Electronegativity#num", "ElectronAffinity#num", "Conductance#num",
             
             "AtomicNumberProperty#numericFunc", "OxidationStateProperty#numericFunc", "IonicRadiusProperty#numericFunc",
-            "AtomicRadiusProperty#numericFunc", "IEProperty#numericFunc", "MetallicProperty#numericFunc", "ElectronegativityProperty#numericFunc",
+            "AtomicRadiusProperty#numericFunc", "FirstIonisationEnergyProperty#numericFunc", "MetallicProperty#numericFunc", "ElectronegativityProperty#numericFunc",
             "ElectronAffinityProperty#numericFunc", "ConductanceProperty#numericFunc",
             
             "Halogen#bool", "GasAtSTP#bool", "LiquidAtSTP#bool", "Metalloid#bool", "NobleGas#bool", "AlkaliMetal#bool", "AlkalineEarthMetal#bool",
@@ -41,12 +41,12 @@ namespace Chemistry_Studio
             "Re#elem", "Os#elem", "Ir#elem", "Pt#elem", "Au#elem", "Hg#elem", "Tl#elem", "Pb#elem", "Bi#elem", "At#elem", "Po#elem", "Rn#elem",
             "Fr#elem", "Ra#elem", "Ac#elem", "Pa#elem", "Th#elem", "Np#elem", "U#elem", "Am#elem", "Pu#elem", "Cm#elem", "Bk#elem", "Cf#elem",
             "Es#elem", "Fm#elem", "Md#elem", "No#elem", "Rf#elem", "Lr#elem", "Db#elem", "Bh#elem", "Sg#elem", "Hs#elem", "Mt#elem", "Ds#elem",
-            "Rg#elem", "Uut#elem", "Cn#elem", "Uup#elem", "Uuq#elem", "Uuh#elem", "Uuo#elem", "Uus#elem", "$0#elem" };
+            "Rg#elem", "Uut#elem", "Cn#elem", "Uup#elem", "Uuq#elem", "Uuh#elem", "Uuo#elem", "Uus#elem", "$1#elem" };
         //Excluded , "As#elem" and , "In#elem"
 
         public static string[] inputTypeList = {
         "Order#numericFunc#change#set", 
-        "Increase#null", "Decrease#null", "Stays_Same#null", "Non_Increase#null", "Non_Decrease#null", "Left#null",
+        "Increases#null", "Decreases#null", "Constant#null", "Non_Increase#null", "Non_Decrease#null", "Left#null",
         "Right#null", "Up#null", "Down#null", "Left_Up#null", "Left_Down#null", "Right_Up#null", "Right_Down#null", 
         "H#null","He#null","Li#null","Be#null","B#null","C#null","N#null","O#null","F#null","Ne#null","Na#null","Mg#null",
         "Al#null","Si#null","P#null","S#null","Cl#null","K#null","Ar#null","Ca#null","Sc#null","V#null","Cr#null","Mn#null","Fe#null",
@@ -57,13 +57,13 @@ namespace Chemistry_Studio
         "Au#null","Hg#null","Tl#null","Pb#null","Bi#null","Po#null","Rn#null","Fr#null","Ra#null","Ac#null","Pa#null","Th#null",
         "Np#null","U#null","Am#null","Pu#null","Cm#null","Bk#null","Cf#null","Es#null","Fm#null","Md#null","No#null","Rf#null","Lr#null",
         "Db#null","Bh#null","Sg#null","Hs#null","Mt#null","Ds#null","Rg#null","Uut#null","Cn#null","Uup#null","Uuq#null","Uuh#null",
-        "Uuo#null","Uus#null","Max#numericFunc#domain","Min#numericFunc#domain","IE#elem","Halogen#elem","GasAtSTP#elem","LiquidAtSTP#elem","Metalloid#elem",
+        "Uuo#null","Uus#null","Max#numericFunc#domain","Min#numericFunc#domain","FirstIonisationEnergy#elem","Halogen#elem","GasAtSTP#elem","LiquidAtSTP#elem","Metalloid#elem",
         "NobleGas#elem","AlkaliMetal#elem","AlkalineEarthMetal#elem","RareEarthElement#elem","IonicBond#elem#elem","CovalentBond#elem#elem",
         "AtomicNumber#elem","OxidationState#elem","Electronegativity#elem","ElectronAffinity#elem","Conductance#elem","IonicRadius#elem",
-        "AtomicRadius#elem","Group#elem","Period#elem","Metallic#elem","Same#num#num","And#bool#bool","Or#bool#bool", "$0#null",
+        "AtomicRadius#elem","Group#elem","Period#elem","Metallic#elem","Same#num#num","And#bool#bool","Or#bool#bool", "$1#null",
 
         "Trend#movement#numericFunc#change", "AtomicNumberProperty#null", "OxidationStateProperty#null", "IonicRadiusProperty#null",
-        "AtomicRadiusProperty#null", "IEProperty#null", "MetallicProperty#null", "ElectronegativityProperty#null",
+        "AtomicRadiusProperty#null", "FirstIonisationEnergyProperty#null", "MetallicProperty#null", "ElectronegativityProperty#null",
         "ElectronAffinityProperty#null", "ConductanceProperty#null"
         };
 
@@ -122,16 +122,16 @@ namespace Chemistry_Studio
           "least#Min", "minimum#Min", "lowest#Min", "weakest#Min", "worst#Min", "quantum number#QuantumNumber",
           "color#Color", "orbital#Orbitals", "family#Family", "electronegativity#Electronegativity", "metallic#Metallic",
           "electron affinity#ElectronAffinity", "conductor#Conductance", "oxidation state#OxidationState", "oxidation number#OxidationState",
-          "ionization energy#IE", "atomic number#AtomicNumber", "group#Group", "period#Period", "element#$0", "same#Same", "and#And", "or#Or", 
-           "increase#Increase", "decrease#Decrease", "stays same#Stays_Same", "unchanged#Stays_Same", "not increase#Non_Increase",
+          "ionization energy#FirstIonisationEnergy", "atomic number#AtomicNumber", "group#Group", "period#Period", "element#$1", "same#Same", 
+           "increase#Increases", "decrease#Decreases", "stays same#Constant", "unchanged#Constant", "not increase#Non_Increase",
            "not decrease#Non_Decrease", "left#Left", "right#Right", "up#Up", "down#Down", "top to bottom#Down", 
-           "electronegativity#ElectronegativityProperty", "metallic#MetallicProperty", "electron affinity#ElectronAffinity",
+           "electronegativity#ElectronegativityProperty", "metallic#MetallicProperty", "electron affinity#ElectronAffinityProperty",
            "conductor#ConductanceProperty", "oxidation state#OxidationStateProperty", "oxidation number#OxidationStateProperty",
-          "ionization energy#IEProperty", "atomic number#AtomicNumberProperty", "atomic radius#AtomicRadiusProperty",
+          "ionization energy#FirstIonisationEnergyProperty", "atomic number#AtomicNumberProperty", "atomic radius#AtomicRadiusProperty",
           "atomic size#AtomicRadiusProperty", "ionic radius#IonicRadiusProperty", "ionic size#IonicRadiusProperty"
             };
 
-         //"left up#Left_Up", "up left#Left_Up", "left down#Left_Down",
+        //"left up#Left_Up", "up left#Left_Up", "left down#Left_Down","and#And", "or#Or", 
            //"down left#Left_Down", "right up#Right_Up", "up right#Right_Up", "right down#Right_Down",  "down right#Right_Down", 
         //Excluded , "in#In"  "as#As" "at#At"
         public static void initialize()

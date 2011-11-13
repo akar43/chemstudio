@@ -11,5 +11,5 @@ namespace Chemistry_Studio
     public abstract class OtherType : TypeSystem {}
 
     //Numeric Types
-    public abstract class IE : NumericType {}
+    public abstract class FirstIonisationEnergy : NumericType {}
 }
