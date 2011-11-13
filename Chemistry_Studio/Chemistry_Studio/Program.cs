@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -734,7 +735,8 @@ namespace Chemistry_Studio
                         Dictionary<string, Position_Confidence> t2 = findTokens(tokenize(option.ToLower()));
                         if (t2.Count == 0)
                         {
-                            //output += "<Arg>" + option + "</Arg>\n";
+                            if (option == "") continue;
+                            output += "<Arg>" + option + "</Arg>\n";
                             continue;
                         }
                         string finaloption="";
@@ -765,7 +767,9 @@ namespace Chemistry_Studio
                 output += "<Arg>" + option + "</Arg>\n";
             }*/
             output += "</Domain>\n</root>";
-
+            TextWriter tw = new StreamWriter("XMLOutput.txt");
+            tw.WriteLine(output);
+            tw.Close();
             return output;
         }
 
@@ -774,7 +778,7 @@ namespace Chemistry_Studio
             Tokens.initialize();
             Tokens.initializePredSpec();
             //string question_path_AK = "C:\\Users\\Abhishek\\Documents\\Visual Studio 2010\\Projects\\Chemistry_Studio\\Chemistry_Studio\\Chemistry_Studio\\Questions\\";
-            string question_path = "F:\\BTP_C#\\Chemistry_Studio\\Chemistry_Studio\\Questions\\";
+            //string question_path = "F:\\BTP_C#\\Chemistry_Studio\\Chemistry_Studio\\Questions\\";
             
             //Question_Struct q4=new Question_Struct(question_path+"Q7.txt");
 
@@ -810,27 +814,35 @@ namespace Chemistry_Studio
             */
 
             ParseTree tree = new ParseTree(new Node());
-            //try
+            try
             {
                 typeSafe(tokenTrees, (ParseTree)tree.Clone(), tokenTrees);
                 string output = "";
-                output+="Question: " + q.ToString() + "\n\n";
+                output += "Question: " + q.ToString() + "\n\n";
                 completeTrees.Sort();
                 completeTrees.Reverse();
                 foreach (ParseTree x in completeTrees)
                 {
                     output = output + x + " Confidence = " + x.confidence + " \n";
                 }
-                if(completeTrees.Count!=0)
-                    output += "\nXML FORM OF TOP TREE :\n" + writeXMLOutput(q, completeTrees[0]);
+                if (completeTrees.Count != 0)
+                    writeXMLOutput(q, completeTrees[0]); //output += "\nXML FORM OF TOP TREE :\n" + 
+                else
+                {
+                    TextWriter tw = new StreamWriter("XMLOutput.txt");
+                    tw.WriteLine("No tree above cut_off threshold was formed correctly!");
+                    tw.Close();
+                }
                 Console.WriteLine(output);
-
             }
-            //catch(Exception e)
-            //{
-              //  Console.WriteLine("Program Crashed! with message : " + e.ToString());
-            //}
-            Console.ReadLine();
+            catch (Exception e)
+            {
+                TextWriter tw = new StreamWriter("XMLOutput.txt");
+                tw.WriteLine(e.ToString());
+                tw.Close();
+                Console.WriteLine("Program Crashed! with message : " + e.ToString());
+            }
+            //Console.ReadLine();
             
         }
     }
